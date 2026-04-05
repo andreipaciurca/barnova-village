@@ -116,6 +116,58 @@ export const translations = {
         description: 'Acces rapid către portalurile guvernamentale și platformele de monitorizare.',
       },
     },
+    admin: {
+      login: {
+        title: 'Portal Admin',
+        subtitle: 'Autentificare securizată prin Magic Link',
+        success_title: 'Verifică-ți emailul!',
+        success_msg: 'Am trimis un link de autentificare pe',
+        success_cta: 'Încearcă alt email',
+        label_email: 'Email Administrativ',
+        placeholder: 'nume@barnova.ro',
+        btn_send: 'Trimite Link de Acces',
+        back_to_site: 'Înapoi la site-ul public',
+      },
+      dashboard: {
+        title: 'Panou Control',
+        greeting_morning: 'Bună dimineața!',
+        greeting_day: 'Bună ziua!',
+        greeting_evening: 'Bună seara!',
+        subtitle: 'Iată ce se întâmplă astăzi în comuna Bârnova.',
+        view_site: 'Vezi Site',
+        new_post: 'Postare Nouă',
+        stats: {
+          active_posts: 'Postări Active',
+          system_health: 'Sănătate Sistem',
+          visitors: 'Vizitatori Azi',
+          status_active: 'Activ',
+        },
+        recent_posts: {
+          title: 'Postări Recente',
+          subtitle: 'Ultimele noutăți publicate pe site',
+          view_all: 'Vezi toate',
+          empty: 'Nu există postări recente.',
+        },
+        sidebar: {
+          dashboard: 'Dashboard',
+          posts: 'Postări & Știri',
+          users: 'Utilizatori',
+          settings: 'Setări Site',
+          logout: 'Ieșire',
+          admin_tag: 'Administrator',
+        }
+      },
+      users: {
+        title: 'Gestionare Utilizatori',
+        subtitle: 'Vizualizează și gestionează conturile cu acces administrativ.',
+        current_user: 'Utilizator Curent',
+        email: 'Email',
+        role: 'Rol',
+        last_login: 'Ultima autentificare',
+        actions: 'Acțiuni',
+        back: 'Înapoi la Dashboard',
+      }
+    }
   },
   en: {
     nav: {
@@ -226,5 +278,57 @@ export const translations = {
         description: 'Quick access to government portals and monitoring platforms.',
       },
     },
+    admin: {
+      login: {
+        title: 'Admin Portal',
+        subtitle: 'Secure authentication via Magic Link',
+        success_title: 'Check your email!',
+        success_msg: 'We sent an authentication link to',
+        success_cta: 'Try another email',
+        label_email: 'Administrative Email',
+        placeholder: 'name@barnova.ro',
+        btn_send: 'Send Access Link',
+        back_to_site: 'Back to public site',
+      },
+      dashboard: {
+        title: 'Control Panel',
+        greeting_morning: 'Good morning!',
+        greeting_day: 'Good day!',
+        greeting_evening: 'Good evening!',
+        subtitle: 'Here is what is happening today in Bârnova commune.',
+        view_site: 'View Site',
+        new_post: 'New Post',
+        stats: {
+          active_posts: 'Active Posts',
+          system_health: 'System Health',
+          visitors: 'Daily Visitors',
+          status_active: 'Active',
+        },
+        recent_posts: {
+          title: 'Recent Posts',
+          subtitle: 'Latest updates published on the site',
+          view_all: 'View all',
+          empty: 'No recent posts found.',
+        },
+        sidebar: {
+          dashboard: 'Dashboard',
+          posts: 'Posts & News',
+          users: 'Users',
+          settings: 'Site Settings',
+          logout: 'Logout',
+          admin_tag: 'Administrator',
+        }
+      },
+      users: {
+        title: 'User Management',
+        subtitle: 'View and manage accounts with administrative access.',
+        current_user: 'Current User',
+        email: 'Email',
+        role: 'Role',
+        last_login: 'Last Login',
+        actions: 'Actions',
+        back: 'Back to Dashboard',
+      }
+    }
   },
 };

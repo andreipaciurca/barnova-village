@@ -17,34 +17,43 @@ import {
   LayoutDashboard,
   Activity,
   Zap,
-  ExternalLink
+  ExternalLink,
+  Menu,
+  X
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { translations, Language } from '@/lib/i18n'
+import { DynamicGreeting } from '@/components/ui/DynamicGreeting'
+import { HealthMetrics } from '@/components/ui/HealthMetrics'
+import { AdminLanguageToggle } from '@/components/ui/AdminLanguageToggle'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminDashboard() {
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>
+}) {
+  const params = await searchParams
+  const lang = (params.lang === 'en' ? 'en' : 'ro') as Language
+  const t = translations[lang].admin.dashboard
+  const navT = t.sidebar
+
   const service = await getServerService()
   const user = await service.getUser()
 
   if (!user) {
-    redirect('/admin/login')
+    redirect(`/admin/login?lang=${lang}`)
   }
 
-  // Fetch posts count or real data
   const posts = await service.getAllPosts()
   
-  const stats = [
-    { label: 'Postări Active', value: posts.length.toString(), icon: FileText, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { label: 'Sănătate Sistem', value: 'Activ', icon: Activity, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-    { label: 'Vizitatori Azi', value: '342', icon: BarChart, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-  ]
-
   return (
-    <div className="min-h-screen bg-muted/10 flex">
+    <div className="min-h-screen bg-muted/10 flex flex-col lg:flex-row">
       {/* Sidebar */}
-      <aside className="w-80 bg-background border-r border-border/50 p-8 flex flex-col hidden lg:flex">
+      <aside className="w-80 bg-background border-r border-border/50 p-8 flex flex-col hidden lg:flex h-screen sticky top-0">
         <div className="flex items-center gap-4 mb-12">
           <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">
             B
@@ -56,81 +65,86 @@ export default async function AdminDashboard() {
         </div>
 
         <nav className="flex-grow space-y-2">
-          <Link href="/admin/dashboard" className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
+          <Link href={`/admin/dashboard?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
             <LayoutDashboard className="w-5 h-5" />
-            Dashboard
+            {navT.dashboard}
           </Link>
-          <Link href="/admin/posts" className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/posts?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <FileText className="w-5 h-5" />
-            Postări & Știri
+            {navT.posts}
           </Link>
-          <Link href="/admin/users" className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/users?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <UsersIcon className="w-5 h-5" />
-            Utilizatori
+            {navT.users}
           </Link>
-          <Link href="/admin/settings" className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/settings?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <Settings className="w-5 h-5" />
-            Setări Site
+            {navT.settings}
           </Link>
         </nav>
 
-        <div className="pt-8 border-t border-border/50">
-          <div className="flex items-center gap-4 px-4 py-4 mb-6">
+        <div className="pt-8 border-t border-border/50 space-y-6">
+          <div className="flex items-center gap-4">
+            <AdminLanguageToggle currentLang={lang} />
+            <ThemeToggle />
+          </div>
+
+          <div className="flex items-center gap-4 px-4 py-4 bg-muted/30 rounded-2xl">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
               <UsersIcon className="w-5 h-5" />
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-black truncate">{user.email}</p>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">Administrator</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{navT.admin_tag}</p>
             </div>
           </div>
+          
           <form action="/auth/signout" method="post">
             <Button variant="outline" className="w-full rounded-2xl font-black gap-2 h-12 text-destructive border-destructive/20 hover:bg-destructive/10">
               <LogOut className="w-4 h-4" />
-              Ieșire
+              {navT.logout}
             </Button>
           </form>
         </div>
       </aside>
 
+      {/* Mobile Header */}
+      <header className="lg:hidden bg-background border-b border-border/50 p-6 flex items-center justify-between sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white text-xl font-black">B</div>
+          <span className="font-black tracking-tighter">Admin</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <AdminLanguageToggle currentLang={lang} />
+          <ThemeToggle />
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="flex-grow p-6 lg:p-12 overflow-y-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
-            <h2 className="text-4xl font-black tracking-tight mb-2">Bună dimineața!</h2>
-            <p className="text-muted-foreground font-semibold">Iată ce se întâmplă astăzi în comuna Bârnova.</p>
+            <DynamicGreeting lang={lang} />
+            <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/">
+            <Link href={`/?lang=${lang}`}>
               <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-6 border-border/50 bg-background/50">
                 <Globe className="w-5 h-5" />
-                Vezi Site
+                {t.view_site}
               </Button>
             </Link>
-            <Link href="/admin/posts/new">
+            <Link href={`/admin/posts/new?lang=${lang}`}>
               <Button className="rounded-2xl font-black gap-2 h-14 px-8 shadow-xl shadow-primary/20">
                 <PlusCircle className="w-5 h-5" />
-                Postare Nouă
+                {t.new_post}
               </Button>
             </Link>
           </div>
         </header>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="p-8 rounded-[2.5rem] border-none shadow-xl shadow-primary/5 bg-background relative overflow-hidden group">
-              <div className={cn("absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity", stat.color)}>
-                <stat.icon className="w-16 h-16" />
-              </div>
-              <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-6", stat.bg, stat.color)}>
-                <stat.icon className="w-6 h-6" />
-              </div>
-              <div className="text-4xl font-black mb-1">{stat.value}</div>
-              <div className="text-xs font-black text-muted-foreground uppercase tracking-widest">{stat.label}</div>
-            </Card>
-          ))}
-        </div>
+        {/* Health Stats */}
+        <HealthMetrics lang={lang} />
 
         {/* Logs & Monitoring Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -199,9 +213,9 @@ export default async function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
           <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-background">
             <div className="p-10 border-b border-border/50 flex items-center justify-between">
-              <h3 className="text-2xl font-black tracking-tight">Postări Recente</h3>
-              <Link href="/admin/posts" className="text-xs font-black uppercase tracking-widest text-primary hover:underline">
-                Vezi toate
+              <h3 className="text-2xl font-black tracking-tight">{t.recent_posts.title}</h3>
+              <Link href={`/admin/posts?lang=${lang}`} className="text-xs font-black uppercase tracking-widest text-primary hover:underline">
+                {t.recent_posts.view_all}
               </Link>
             </div>
             <div className="overflow-x-auto">
@@ -215,34 +229,39 @@ export default async function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50">
-                  {[
-                    { title: 'Modernizare Școala Bârnova', status: 'Publicat', date: 'Acum 2 ore' },
-                    { title: 'Proiect Canalizare Etapa 2', status: 'Draft', date: 'Ieri' },
-                    { title: 'Festivalul Tradițiilor Locale', status: 'Publicat', date: '3 Apr 2026' },
-                  ].map((post, idx) => (
-                    <tr key={idx} className="hover:bg-muted/20 transition-colors">
-                      <td className="px-10 py-6 font-bold">{post.title}</td>
-                      <td className="px-10 py-6">
-                        <span className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
-                          post.status === 'Publicat' ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
-                        )}>
-                          {post.status}
-                        </span>
-                      </td>
-                      <td className="px-10 py-6 text-sm text-muted-foreground font-medium">{post.date}</td>
-                      <td className="px-10 py-6 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-border/50">
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-border/50 text-destructive hover:bg-destructive/10">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                  {posts.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-10 py-12 text-center text-muted-foreground font-bold italic">
+                        {t.recent_posts.empty}
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    posts.slice(0, 5).map((post, idx) => (
+                      <tr key={idx} className="hover:bg-muted/20 transition-colors">
+                        <td className="px-10 py-6 font-bold">{post.title}</td>
+                        <td className="px-10 py-6">
+                          <span className={cn(
+                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                            post.is_published ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                          )}>
+                            {post.is_published ? 'Publicat' : 'Draft'}
+                          </span>
+                        </td>
+                        <td className="px-10 py-6 text-sm text-muted-foreground font-medium">
+                          {new Date(post.created_at).toLocaleDateString(lang === 'ro' ? 'ro-RO' : 'en-US')}
+                        </td>
+                        <td className="px-10 py-6 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link href={`/admin/posts/${post.id}?lang=${lang}`}>
+                              <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-border/50">
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

@@ -163,8 +163,11 @@ export default async function Home() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-100 py-8 text-center text-slate-400 text-xs">
-            &copy; {new Date().getFullYear()} Primăria Bârnova. Site construit pentru viitor.
+          <div className="border-t border-slate-100 py-8 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
+            <div>&copy; {new Date().getFullYear()} Primăria Bârnova. Site construit pentru viitor.</div>
+            <div>
+              Creat de <a href="https://andreipaciurca.github.io" className="text-blue-600 hover:underline font-medium">Andrei Alexandru Paciurca</a>
+            </div>
           </div>
         </footer>
       </div>

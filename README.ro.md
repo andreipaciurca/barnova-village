@@ -69,23 +69,28 @@ Am implementat un sistem administrativ complet folosind un stack modern și secu
 2. **Configurează Autentificarea:**
    - Mergi la `Authentication` -> `Providers` -> `Email`.
    - Activează `Confirm Email` și asigură-te că `Magic Links` sunt permise.
-3. **Execută Schema SQL:**
-   - Deschide `SQL Editor` în Supabase și rulează conținutul fișierului `supabase/schema.sql` din acest proiect.
-4. **Variabile de Mediu:**
-   - În Vercel (sau `.env.local`), adaugă următoarele chei preluate din setările proiectului Supabase:
+3. **Adaugă Utilizatori:**
+   - Mergi la `Authentication` -> `Users` -> `Add User`.
+   - Introdu adresa de email pe care dorești să o folosești pentru administrare. Doar email-urile din această listă se pot loga.
+4. **Execută Schema SQL:**
+   - Deschide `SQL Editor` în Supabase și rulează conținutul fișierului `supabase/schema.sql` din acest proiect pentru a crea tabelele necesare.
+5. **Variabile de Mediu:**
+   - În Vercel (sau `.env.local`), adaugă următoarele chei preluate din `Project Settings` -> `API`:
      ```bash
      NEXT_PUBLIC_SUPABASE_URL=...
      NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-     SUPABASE_SERVICE_ROLE_KEY=...
-     NEXT_PUBLIC_SITE_URL=https://barnova.vercel.app
+     # Folosește PUBLISHABLE_DEFAULT_KEY dacă Supabase îți oferă acest format nou
+     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=...
      ```
 
 ### 🔐 Acces Admin & Dashboard
-Pentru a gestiona conținutul site-ului, urmați acești pași:
-1. **Accesați Pagina de Login:** Navigați la [/admin/login](https://barnova.vercel.app/admin/login) sau folosiți link-ul **Dashboard Admin** din bara de navigare.
-2. **Autentificare Magic Link:** Introduceți adresa de email administrativă. Veți primi un email cu un link de acces securizat.
-3. **Acces Dashboard:** Dați click pe butonul din email pentru a fi redirecționat automat către panoul de control (`/admin/dashboard`).
-4. **Cerințe:** Email-ul dumneavoastră trebuie să fie deja înregistrat în secțiunea `Authentication` a proiectului Supabase asociat.
+Pentru a gestiona conținutul site-ului, urmați acești pași simpli:
+1. **Accesați Pagina de Login:** Navigați la [barnova.vercel.app/admin/login](https://barnova.vercel.app/admin/login) sau dați click pe link-ul **Dashboard Admin** din meniul principal (sus).
+2. **Introduceți Email-ul:** Folosiți adresa de email adăugată anterior în Supabase.
+3. **Trimiteți Link-ul:** Apăsați butonul **"Trimite Link de Acces"**.
+4. **Verificați Email-ul:** Veți primi un mesaj de la Supabase (subiect: "Confirm your signup" sau "Log in").
+5. **Autentificare:** Dați click pe butonul **"Confirm your email"** sau pe link-ul din mesaj.
+6. **Sunteți Logat:** Browser-ul vă va redirecționa automat în dashboard (`/admin/dashboard`), unde puteți adăuga sau edita postări.
 
 ### 🔒 Securitate
 - **Fără Parole:** Atacurile de tip brute-force sunt inutile, deoarece autentificarea se bazează pe link-uri unice trimise pe email.
@@ -130,17 +135,25 @@ Pentru a menține site-ul la zi cu cele mai recente informații despre conducere
 - `npm run fetch:bec`: Sincronizează și validează datele conducerii cu rezultatele oficiale BEC/AEP.
 - `npm test`: Rulează suita de teste (Vitest).
 
-### Monitorizare Stare (Health)
-Proiectul include un endpoint de monitorizare la `/api/health` care verifică:
+### Monitorizare Stare & Log-uri (Health)
+Proiectul include un sistem avansat de monitorizare la [/api/health](https://barnova.vercel.app/api/health) care verifică:
 - **Starea Sistemului**: Timp de funcționare (uptime), utilizarea memoriei și versiunea.
 - **Conectivitate Supabase**: Verifică dacă aplicația poate comunica cu succes cu baza de date PostgreSQL.
 - **Mediu Vercel**: Detectează dacă aplicația rulează în mediul de producție sau preview din Vercel.
+- **Link-uri Diagnotic**: Oferă link-uri directe către log-urile oficiale din Vercel și Supabase.
+
+### 📊 Accesarea Log-urilor (Producție)
+Pentru a depana problemele în producție, accesați:
+1. **Vercel Logs:** [vercel.com/dashboard](https://vercel.com/dashboard) -> Selectați proiectul -> Tab-ul `Logs`. Aici vedeți erorile de tip Serverless Function (SSR) și Edge Middleware.
+2. **Supabase Logs:** [supabase.com/dashboard](https://supabase.com/dashboard) -> `Settings` -> `Database` -> `Logs`. Aici vedeți interogările SQL, erorile de autentificare și activitatea API.
+3. **Admin Dashboard:** În panoul de control ([/admin/dashboard](https://barnova.vercel.app/admin/dashboard)), am integrat o secțiune de **Monitorizare & Log-uri** pentru acces rapid.
 
 ### Cum se Verifică
 1. Rulați `npm run scrape:leadership` pentru a colecta cele mai noi informații.
 2. Rulați `npm run fetch:bec` pentru a le valida față de datele electorale oficiale.
 3. Verificați `public/data/leadership.json` pentru rezultatul final.
-4. Rulați `npm run dev` și verificați secțiunea "Conducere" de pe pagina principală.
+4. Accesați `/api/health` pentru a confirma că toate serviciile (Supabase/Vercel) sunt "connected".
+5. Rulați `npm run dev` și verificați secțiunea "Conducere" de pe pagina principală.
 
 ---
 *Creat pentru o comunitate mai bună.*

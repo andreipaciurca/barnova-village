@@ -62,12 +62,33 @@ We've implemented a complete administrative system using a modern, secure stack.
 - **Next.js (App Router):** Secured routes via Middleware and Server Components.
 - **Vercel:** Free hosting with automatic integration.
 
+### 🚀 Step-by-Step Configuration
+1. **Create a free project on [Supabase](https://supabase.com/).**
+2. **Configure Authentication:**
+   - Go to `Authentication` -> `Providers` -> `Email`.
+   - Enable `Confirm Email` and ensure `Magic Links` are allowed.
+3. **Add Administrative Users:**
+   - Go to `Authentication` -> `Users` -> `Add User`.
+   - Enter the email address you want to use for administration. Only emails in this list can log in.
+4. **Execute SQL Schema:**
+   - Open the `SQL Editor` in Supabase and run the content of the `supabase/schema.sql` file from this project to create the required tables.
+5. **Environment Variables:**
+   - In Vercel (or `.env.local`), add the following keys from `Project Settings` -> `API`:
+     ```bash
+     NEXT_PUBLIC_SUPABASE_URL=...
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+     # Use PUBLISHABLE_DEFAULT_KEY if Supabase provides this new format
+     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=...
+     ```
+
 ### 🔐 Admin Access & Dashboard
-To manage the site content, follow these steps:
-1. **Access the Login Page:** Navigate to [/admin/login](https://barnova.vercel.app/admin/login) or use the **Admin Dashboard** link in the navigation bar.
-2. **Magic Link Authentication:** Enter your administrative email address. You will receive an email with a secure access link.
-3. **Dashboard Access:** Click the link in the email to be automatically redirected to the control panel (`/admin/dashboard`).
-4. **Requirements:** Your email must be pre-registered in the `Authentication` section of the associated Supabase project.
+To manage the site content, follow these simple steps:
+1. **Access the Login Page:** Navigate to [barnova.vercel.app/admin/login](https://barnova.vercel.app/admin/login) or click the **Admin Dashboard** link in the main navigation menu (top).
+2. **Enter your Email:** Use the email address previously added in Supabase.
+3. **Send the Link:** Press the **"Send Access Link"** button.
+4. **Check your Email:** You will receive a message from Supabase (Subject: "Confirm your signup" or "Log in").
+5. **Authenticate:** Click the **"Confirm your email"** button or the link within the message.
+6. **You're Logged In:** Your browser will automatically redirect you to the dashboard (`/admin/dashboard`), where you can add or edit posts.
 
 ## Local Development & Testing
 
@@ -107,17 +128,25 @@ To keep the site updated with the latest leadership information, we use a combin
 - `npm run fetch:bec`: Sychronizes and validates leadership data with official election results.
 - `npm test`: Runs the test suite (Vitest).
 
-### Health Monitoring
-The project includes a health endpoint at `/api/health` that monitors:
+### Health Monitoring & Logs
+The project includes an advanced health monitoring endpoint at [/api/health](https://barnova.vercel.app/api/health) that tracks:
 - **System Status**: Uptime, memory usage, and versioning.
 - **Supabase Connectivity**: Verifies if the application can successfully communicate with the PostgreSQL database.
 - **Vercel Environment**: Detects if the application is running in a Vercel production or preview environment.
+- **Diagnostic Links**: Provides direct links to official Vercel and Supabase logs for troubleshooting.
+
+### 📊 Accessing Logs (Production)
+To troubleshoot issues in production, visit:
+1. **Vercel Logs:** [vercel.com/dashboard](https://vercel.com/dashboard) -> Select Project -> `Logs` tab. Here you see Serverless Function errors (SSR) and Edge Middleware logs.
+2. **Supabase Logs:** [supabase.com/dashboard](https://supabase.com/dashboard) -> `Settings` -> `Database` -> `Logs`. Here you see SQL queries, Auth errors, and API activity.
+3. **Admin Dashboard:** In the control panel ([/admin/dashboard](https://barnova.vercel.app/admin/dashboard)), we've integrated a **Monitoring & Logs** section for quick access.
 
 ### How to Verify
 1. Run `npm run scrape:leadership` to gather the latest info.
 2. Run `npm run fetch:bec` to validate it against official election data.
 3. Check `public/data/leadership.json` for the result.
-4. Run `npm run dev` and check the "Leadership" section on the home page.
+4. Access `/api/health` to confirm all services (Supabase/Vercel) are "connected".
+5. Run `npm run dev` and check the "Leadership" section on the home page.
 
 ---
 *Created for a better community.*

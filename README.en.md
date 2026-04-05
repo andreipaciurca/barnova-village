@@ -1,5 +1,8 @@
 # Bârnova Village - Modern Experience
 
+![Live Demo](https://img.shields.io/badge/demo-online-brightgreen.svg)
+[barnova.vercel.app](https://barnova.vercel.app/)
+
 ![Build Status](https://github.com/andreipaciurca/barnova-village/actions/workflows/ci.yml/badge.svg)
 ![Dependabot Status](https://img.shields.io/badge/dependabot-enabled-blue.svg?logo=dependabot)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -88,6 +91,12 @@ To keep the site updated with the latest leadership information, we use a combin
 - `npm run scrape:leadership`: Scrapes the latest leadership data from `primariabarnova.ro`.
 - `npm run fetch:bec`: Sychronizes and validates leadership data with official election results.
 - `npm test`: Runs the test suite (Vitest).
+
+### Health Monitoring
+The project includes a health endpoint at `/api/health` that monitors:
+- **System Status**: Uptime, memory usage, and versioning.
+- **Supabase Connectivity**: Verifies if the application can successfully communicate with the PostgreSQL database.
+- **Vercel Environment**: Detects if the application is running in a Vercel production or preview environment.
 
 ### How to Verify
 1. Run `npm run scrape:leadership` to gather the latest info.

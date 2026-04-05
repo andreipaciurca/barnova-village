@@ -1,5 +1,8 @@
 # Comuna Bârnova - Experiență Modernă
 
+![Live Demo](https://img.shields.io/badge/demo-online-brightgreen.svg)
+[barnova.vercel.app](https://barnova.vercel.app/)
+
 ![Build Status](https://github.com/andreipaciurca/barnova-village/actions/workflows/ci.yml/badge.svg)
 ![Dependabot Status](https://img.shields.io/badge/dependabot-enabled-blue.svg?logo=dependabot)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -51,6 +54,37 @@ Tehnic, aceasta este o aplicație **Next.js** (JavaScript/TypeScript), nu o tem�
 - **Deployment**: Desfășurări automate pe Vercel/Netlify la fiecare push pe `main`.
 - **Sincronizare**: Scripturi pentru migrarea sau sincronizarea datelor între medii.
 
+## 🔐 Admin Dashboard & Securitate (Tier Gratuit)
+
+Am implementat un sistem administrativ complet folosind un stack modern și securizat, delegând responsabilitățile către servicii externe pentru a menține costurile **ZERO**.
+
+### 🛠️ Tehnologii Utilizate
+- **Supabase (Auth & Database):** Autentificare **Passwordless** (Magic Links/Token-based) și bază de date PostgreSQL.
+- **Next.js (App Router):** Rute securizate prin Middleware și Server Components.
+- **Dependency Injection (DI):** Arhitectură modulară folosind decoratori de tip **SpringBoot** (`@Service`).
+- **Vercel:** Hosting gratuit cu integrare automată.
+
+### 🚀 Configurare Pas cu Pas
+1. **Creează un proiect gratuit pe [Supabase](https://supabase.com/).**
+2. **Configurează Autentificarea:**
+   - Mergi la `Authentication` -> `Providers` -> `Email`.
+   - Activează `Confirm Email` și asigură-te că `Magic Links` sunt permise.
+3. **Execută Schema SQL:**
+   - Deschide `SQL Editor` în Supabase și rulează conținutul fișierului `supabase/schema.sql` din acest proiect.
+4. **Variabile de Mediu:**
+   - În Vercel (sau `.env.local`), adaugă următoarele chei preluate din setările proiectului Supabase:
+     ```bash
+     NEXT_PUBLIC_SUPABASE_URL=...
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+     SUPABASE_SERVICE_ROLE_KEY=...
+     NEXT_PUBLIC_SITE_URL=https://barnova.vercel.app
+     ```
+
+### 🔒 Securitate
+- **Fără Parole:** Atacurile de tip brute-force sunt inutile, deoarece autentificarea se bazează pe link-uri unice trimise pe email.
+- **RLS (Row Level Security):** Baza de date este protejată la nivel de rând; doar administratorii autentificați pot modifica postările.
+- **Middleware:** Accesul la rutele `/admin/*` este verificat la nivel de server înainte de randare.
+
 ## Dezvoltare Locală și Testare
 
 Pentru a rula și testa proiectul pe mașina locală, urmați acești pași:
@@ -88,6 +122,12 @@ Pentru a menține site-ul la zi cu cele mai recente informații despre conducere
 - `npm run scrape:leadership`: Extrage datele despre conducere de pe `primariabarnova.ro`.
 - `npm run fetch:bec`: Sincronizează și validează datele conducerii cu rezultatele oficiale BEC/AEP.
 - `npm test`: Rulează suita de teste (Vitest).
+
+### Monitorizare Stare (Health)
+Proiectul include un endpoint de monitorizare la `/api/health` care verifică:
+- **Starea Sistemului**: Timp de funcționare (uptime), utilizarea memoriei și versiunea.
+- **Conectivitate Supabase**: Verifică dacă aplicația poate comunica cu succes cu baza de date PostgreSQL.
+- **Mediu Vercel**: Detectează dacă aplicația rulează în mediul de producție sau preview din Vercel.
 
 ### Cum se Verifică
 1. Rulați `npm run scrape:leadership` pentru a colecta cele mai noi informații.

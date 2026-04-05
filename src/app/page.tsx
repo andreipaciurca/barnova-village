@@ -1,6 +1,7 @@
 import { getPosts } from '@/lib/wordpress';
 import { getNewsFeed, NewsItem } from '@/lib/news';
 import { getAdministrationData } from '@/lib/administration';
+import { getServerService } from '@/lib/supabase/services.server';
 import { translations, Language, Feature } from '@/lib/i18n';
 import { headers } from 'next/headers';
 import { Button } from '@/components/ui/Button';
@@ -10,6 +11,7 @@ import { cn } from '@/lib/utils';
 import * as motion from 'framer-motion/client';
 import { Navbar } from '@/components/ui/Navbar';
 import { GovernanceSection } from '@/components/ui/GovernanceSection';
+import Link from 'next/link';
 import { 
   ArrowRight, 
   MapPin, 
@@ -56,6 +58,10 @@ export default async function Home({
   }
 
   const t = translations[lang];
+
+  // Modificare pentru a include link-ul către Admin în footer sau altundeva dacă ești logat
+  const service = await getServerService();
+  const user = await service.getUser();
 
   const features = [
     { ...t.features.digital, icon: Zap, color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -716,6 +722,11 @@ export default async function Home({
           <div className="pt-12 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <div>&copy; {new Date().getFullYear()} {t.footer.copyright}</div>
             <div className="flex items-center gap-3">
+              {user && (
+                <Link href="/admin/dashboard" className="text-primary hover:underline bg-primary/10 px-4 py-2 rounded-full border border-primary/20 mr-4">
+                  Admin Dashboard
+                </Link>
+              )}
               <span className="opacity-50">{t.footer.created_by}</span>
               <a href="https://andreipaciurca.github.io" className="text-foreground hover:text-primary transition-colors bg-accent/50 px-4 py-2 rounded-full border border-border/50">
                 Andrei Alexandru Paciurca

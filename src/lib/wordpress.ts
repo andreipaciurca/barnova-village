@@ -1,7 +1,9 @@
+import { getServerService } from '@/lib/supabase/services.server'
+
 const WP_URL = 'https://primariabarnova.ro/wp-json/wp/v2';
 
 export interface Post {
-  id: number;
+  id: string | number;
   date: string;
   title: {
     rendered: string;
@@ -44,18 +46,34 @@ const MOCK_POSTS: Post[] = [
 
 export async function getPosts(): Promise<Post[]> {
   try {
+    // Încearcă să preia din Supabase prima dată folosind noul serviciu (DI)
+    const service = await getServerService()
+    const supabasePosts = await service.getAllPosts()
+    const publishedPosts = supabasePosts.filter(p => p.status === 'published')
+
+    if (publishedPosts.length > 0) {
+      return publishedPosts.slice(0, 6).map(p => ({
+        id: p.id,
+        date: p.published_at || p.created_at,
+        title: { rendered: p.title },
+        content: { rendered: p.content },
+        excerpt: { rendered: p.excerpt || '' },
+        slug: p.slug
+      }))
+    }
+    // ... restul fallback-ului rămâne la fel
+
+    // Fallback la WordPress dacă nu sunt postări în Supabase
     const res = await fetch(`${WP_URL}/posts?_embed&per_page=6`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
-      console.warn('WordPress API failed, falling back to mock data');
       return MOCK_POSTS;
     }
 
     return res.json();
   } catch (error) {
-    console.warn('WordPress API error, falling back to mock data:', error);
     return MOCK_POSTS;
   }
 }

@@ -80,6 +80,13 @@ Am implementat un sistem administrativ complet folosind un stack modern și secu
      NEXT_PUBLIC_SITE_URL=https://barnova.vercel.app
      ```
 
+### 🔐 Acces Admin & Dashboard
+Pentru a gestiona conținutul site-ului, urmați acești pași:
+1. **Accesați Pagina de Login:** Navigați la [/admin/login](https://barnova.vercel.app/admin/login) sau folosiți link-ul **Dashboard Admin** din bara de navigare.
+2. **Autentificare Magic Link:** Introduceți adresa de email administrativă. Veți primi un email cu un link de acces securizat.
+3. **Acces Dashboard:** Dați click pe butonul din email pentru a fi redirecționat automat către panoul de control (`/admin/dashboard`).
+4. **Cerințe:** Email-ul dumneavoastră trebuie să fie deja înregistrat în secțiunea `Authentication` a proiectului Supabase asociat.
+
 ### 🔒 Securitate
 - **Fără Parole:** Atacurile de tip brute-force sunt inutile, deoarece autentificarea se bazează pe link-uri unice trimise pe email.
 - **RLS (Row Level Security):** Baza de date este protejată la nivel de rând; doar administratorii autentificați pot modifica postările.

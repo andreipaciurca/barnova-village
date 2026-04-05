@@ -54,6 +54,21 @@ Technically, this is a **Next.js** (JavaScript/TypeScript) application, not a tr
 - **Deployment**: Automated deployments to Vercel/Netlify on every push to `main`.
 - **Sync**: Scripts to migrate or sync data between environments.
 
+## 🔐 Admin Dashboard & Security
+We've implemented a complete administrative system using a modern, secure stack.
+
+### 🛠️ Tech Stack
+- **Supabase (Auth & Database):** **Passwordless** authentication (Magic Links) and PostgreSQL database.
+- **Next.js (App Router):** Secured routes via Middleware and Server Components.
+- **Vercel:** Free hosting with automatic integration.
+
+### 🔐 Admin Access & Dashboard
+To manage the site content, follow these steps:
+1. **Access the Login Page:** Navigate to [/admin/login](https://barnova.vercel.app/admin/login) or use the **Admin Dashboard** link in the navigation bar.
+2. **Magic Link Authentication:** Enter your administrative email address. You will receive an email with a secure access link.
+3. **Dashboard Access:** Click the link in the email to be automatically redirected to the control panel (`/admin/dashboard`).
+4. **Requirements:** Your email must be pre-registered in the `Authentication` section of the associated Supabase project.
+
 ## Local Development & Testing
 
 To run and test the project on your local machine, follow these steps:

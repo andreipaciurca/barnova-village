@@ -36,7 +36,6 @@ export function Navbar({ lang, t }: NavbarProps) {
     { label: t.nav.admin, href: '#admin' },
     { label: t.nav.services, href: '#services' },
     { label: t.nav.tourism, href: '#tourism' },
-    { label: t.nav.dashboard, href: '/admin/dashboard' },
   ];
 
   return (

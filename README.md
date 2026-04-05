@@ -52,9 +52,34 @@ Taking inspiration from [andreipaciurca.github.io](https://andreipaciurca.github
 - **Deployment**: Automated deployments to Vercel/Netlify on every push to `main`.
 - **Sync**: Scripts to migrate or sync data between environments.
 
-## Getting Started
-1. `npm install`
-2. `npm run dev`
+## Local Development & Testing
+
+To run and test the project on your local machine, follow these steps:
+
+### Prerequisites
+- **Node.js**: Ensure you have Node.js 18.x or later installed.
+- **npm**: Usually comes with Node.js.
+
+### Steps
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+2. **Run the Development Server**:
+   ```bash
+   npm run dev
+   ```
+3. **Open the App**:
+   Navigate to [http://localhost:3000](http://localhost:3000) in your web browser.
+
+The development server features "Hot Reloading," so any changes you make to the code (like in `src/app/page.tsx`) will be reflected instantly in the browser.
+
+### Scripts
+- `npm run dev`: Starts the development server.
+- `npm run build`: Creates an optimized production build.
+- `npm run start`: Starts the production server (after running build).
+- `npm run lint`: Runs ESLint to check for code quality issues.
+- `npm run scrape`: Runs the data migration script from the existing site.
 
 ---
-*Created in 2026 for a better community.*
+*Created for a better community.*

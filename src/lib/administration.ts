@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { cache } from 'react';
 
 export interface CouncilMember {
   name: string;
@@ -35,7 +36,7 @@ const DEFAULT_DATA: AdministrationData = {
   ],
 };
 
-export async function getAdministrationData(): Promise<AdministrationData> {
+export const getAdministrationData = cache(async function (): Promise<AdministrationData> {
   try {
     const dataPath = path.join(process.cwd(), 'public/data/leadership.json');
     if (fs.existsSync(dataPath)) {
@@ -56,4 +57,4 @@ export async function getAdministrationData(): Promise<AdministrationData> {
     console.error('Error reading administration data:', error);
     return DEFAULT_DATA;
   }
-}
+});

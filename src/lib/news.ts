@@ -1,4 +1,5 @@
 import Parser from 'rss-parser';
+import { cache } from 'react';
 
 export type NewsItem = {
   title: string;
@@ -10,7 +11,7 @@ export type NewsItem = {
 const parser = new Parser();
 const RSS_FEED_URL = 'https://primariabarnova.ro/feed/';
 
-export async function getNewsFeed(): Promise<NewsItem[]> {
+export const getNewsFeed = cache(async function (): Promise<NewsItem[]> {
   try {
     const feed = await parser.parseURL(RSS_FEED_URL);
     return feed.items.map(item => ({
@@ -23,4 +24,4 @@ export async function getNewsFeed(): Promise<NewsItem[]> {
     console.error('Error fetching RSS feed:', error);
     return [];
   }
-}
+});

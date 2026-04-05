@@ -1,4 +1,5 @@
 import { getServerService } from '@/lib/supabase/services.server'
+import { cache } from 'react';
 
 const WP_URL = 'https://primariabarnova.ro/wp-json/wp/v2';
 
@@ -44,7 +45,7 @@ const MOCK_POSTS: Post[] = [
   },
 ];
 
-export async function getPosts(): Promise<Post[]> {
+export const getPosts = cache(async function (): Promise<Post[]> {
   try {
     // Încearcă să preia din Supabase prima dată folosind noul serviciu (DI)
     const service = await getServerService()
@@ -61,7 +62,6 @@ export async function getPosts(): Promise<Post[]> {
         slug: p.slug
       }))
     }
-    // ... restul fallback-ului rămâne la fel
 
     // Fallback la WordPress dacă nu sunt postări în Supabase
     const res = await fetch(`${WP_URL}/posts?_embed&per_page=6`, {
@@ -74,6 +74,7 @@ export async function getPosts(): Promise<Post[]> {
 
     return res.json();
   } catch (error) {
+    console.error('Error in getPosts:', error);
     return MOCK_POSTS;
   }
-}
+});

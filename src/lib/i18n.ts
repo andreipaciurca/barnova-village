@@ -11,7 +11,6 @@ export const translations = {
     nav: {
       home: 'Acasă',
       admin: 'Administrație',
-      dashboard: 'Dashboard Admin',
       services: 'Servicii',
       tourism: 'Turism',
       contact: 'Contact',
@@ -99,7 +98,6 @@ export const translations = {
     nav: {
       home: 'Home',
       admin: 'Administration',
-      dashboard: 'Admin Dashboard',
       services: 'Services',
       tourism: 'Tourism',
       contact: 'Contact',

@@ -1,0 +1,190 @@
+{
+  "primar": {
+    "nume": "BALAN MIHAI",
+    "partid": "PARTIDUL NAȚIONAL LIBERAL",
+    "bec_voturi": 1456,
+    "bec_procent": "37.65%"
+  },
+  "viceprimar": {
+    "nume": "Rusu Constantin Lucian"
+  },
+  "secretar": {
+    "nume": "DIMA Radu-Daniel"
+  },
+  "administrator_public": {
+    "nume": "Daniela Mihaela Riznic"
+  },
+  "consiliu_local": [
+    {
+      "nume": "RUSU CONSTANTIN-LUCIAN",
+      "partid": "PNL"
+    },
+    {
+      "nume": "ACATRINEI FLORIN",
+      "partid": "PNL"
+    },
+    {
+      "nume": "LUCA CONSTANTIN-CRISTIAN",
+      "partid": "PNL"
+    },
+    {
+      "nume": "CIOBANU MIRCEA",
+      "partid": "PNL"
+    },
+    {
+      "nume": "LUCA CĂTĂLIN-IONUŢ",
+      "partid": "PNL"
+    },
+    {
+      "nume": "TINCU GEORGEL-DANIEL",
+      "partid": "PSD"
+    },
+    {
+      "nume": "POPA DAN-CONSTANTIN",
+      "partid": "PSD"
+    },
+    {
+      "nume": "LUCA FĂNICĂ",
+      "partid": "PSD"
+    },
+    {
+      "nume": "VORNICU FLORIN",
+      "partid": "PSD"
+    },
+    {
+      "nume": "STRATULAT-PETERCĂ EMMA-CECILIA",
+      "partid": "USR"
+    },
+    {
+      "nume": "DUMITRU RADU",
+      "partid": "USR"
+    },
+    {
+      "nume": "ȘOȘU GEORGETA-IULIANA",
+      "partid": "USR"
+    },
+    {
+      "nume": "COBZARU IONUȚ-CĂTĂLIN",
+      "partid": "USR"
+    },
+    {
+      "nume": "COLOTIN SEBASTIAN",
+      "partid": "S.O.S. ROMÂNIA"
+    },
+    {
+      "nume": "COVALIU LIDIA-CAMELIA",
+      "partid": "PARTIDUL VERDE"
+    }
+  ],
+  "servicii_si_departamente": [
+    {
+      "nume": "REGISTRATURA",
+      "info": ""
+    },
+    {
+      "nume": "CONTABILITATE",
+      "info": ""
+    },
+    {
+      "nume": "CASIERIE",
+      "info": "Tel mobil: 0766 059 817\nE-mail: registratura@primariabarnova.ro"
+    },
+    {
+      "nume": "URBANISM",
+      "info": ""
+    },
+    {
+      "nume": "JURIDIC, STARE CIVILĂ, ETICA ȘI TRANSPARENȚĂ",
+      "info": ""
+    },
+    {
+      "nume": "ASISTENTA SOCIALA",
+      "info": ""
+    },
+    {
+      "nume": "REGISTRUL AGRICOL",
+      "info": ""
+    },
+    {
+      "nume": "SERVICIU VOLUNTAR  PENTRU SITUATII DE URGENTA",
+      "info": ""
+    },
+    {
+      "nume": "INSPECTOR PROTECȚIE CIVILĂ",
+      "info": ""
+    },
+    {
+      "nume": "POLIȚIA LOCALĂ",
+      "info": "Tel fix: 0232 294 120, interior 22"
+    },
+    {
+      "nume": "ACHIZIȚII PUBLICE",
+      "info": ""
+    },
+    {
+      "nume": "LIBERUL ACCES LA INFORMAȚII DE INTERES PUBLIC",
+      "info": ""
+    },
+    {
+      "nume": "PROTECȚIA DATELOR CU CARACTER PERSONAL (GDPR)",
+      "info": ""
+    },
+    {
+      "nume": "CONSILIER PRIMAR, INTERVENȚII ILUMINAT PUBLIC, GOSPODĂRIRE COMUNALĂ",
+      "info": ""
+    },
+    {
+      "nume": "EXECUTĂRI SILITE",
+      "info": ""
+    },
+    {
+      "nume": "ARHIVA",
+      "info": ""
+    },
+    {
+      "nume": "CAMIN CULTURAL",
+      "info": ""
+    },
+    {
+      "nume": "BIBLIOTECA",
+      "info": ""
+    }
+  ],
+  "documente_personal": [],
+  "metadata": {
+    "ultima_actualizare_bec": "2026-04-05T17:56:34.689Z",
+    "sursa_bec_id": "locale09062024"
+  },
+  "bec_rezultate_partide": [
+    {
+      "partid": "PARTIDUL NAȚIONAL LIBERAL",
+      "voturi": 1286,
+      "procent": "33.13%",
+      "mandate": 5
+    },
+    {
+      "partid": "PARTIDUL SOCIAL DEMOCRAT",
+      "voturi": 894,
+      "procent": "23.03%",
+      "mandate": 4
+    },
+    {
+      "partid": "UNIUNEA SALVAȚI ROMÂNIA",
+      "voturi": 889,
+      "procent": "22.9%",
+      "mandate": 4
+    },
+    {
+      "partid": "PARTIDUL S.O.S. ROMÂNIA",
+      "voturi": 306,
+      "procent": "7.88%",
+      "mandate": 1
+    },
+    {
+      "partid": "PARTIDUL VERDE",
+      "voturi": 242,
+      "procent": "6.23%",
+      "mandate": 1
+    }
+  ]
+}

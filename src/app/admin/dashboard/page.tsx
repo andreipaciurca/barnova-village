@@ -14,9 +14,13 @@ import {
   Pencil,
   Trash2,
   Calendar,
-  LayoutDashboard
+  LayoutDashboard,
+  Activity,
+  Zap,
+  ExternalLink
 } from 'lucide-react'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,8 +37,8 @@ export default async function AdminDashboard() {
   
   const stats = [
     { label: 'Postări Active', value: posts.length.toString(), icon: FileText, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { label: 'Evenimente', value: '4', icon: Calendar, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-    { label: 'Vizitatori Azi', value: '342', icon: BarChart, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { label: 'Sănătate Sistem', value: 'Activ', icon: Activity, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { label: 'Vizitatori Azi', value: '342', icon: BarChart, color: 'text-amber-500', bg: 'bg-amber-500/10' },
   ]
 
   return (
@@ -128,6 +132,69 @@ export default async function AdminDashboard() {
           ))}
         </div>
 
+        {/* Logs & Monitoring Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background overflow-hidden relative">
+             <div className="absolute top-0 right-0 p-10 opacity-5">
+              <Zap className="w-32 h-32" />
+            </div>
+            <h3 className="text-2xl font-black tracking-tight mb-8">Monitorizare & Log-uri</h3>
+            <div className="space-y-4">
+              <a 
+                href="https://vercel.com/dashboard" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-6 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-black text-sm">Vercel Logs</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Serverless Functions & Deployment</p>
+                  </div>
+                </div>
+                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </a>
+
+              <a 
+                href="https://supabase.com/dashboard" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-6 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white">
+                    <Activity className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-black text-sm">Supabase Logs</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Database & Auth Activity</p>
+                  </div>
+                </div>
+                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </a>
+            </div>
+          </Card>
+
+          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background flex flex-col justify-center text-center">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary mx-auto mb-6">
+              <Activity className="w-10 h-10 animate-pulse" />
+            </div>
+            <h3 className="text-2xl font-black tracking-tight mb-2">Endpoint Sănătate</h3>
+            <p className="text-muted-foreground font-semibold mb-8 max-w-sm mx-auto">
+              Sistemul verifică automat conexiunea cu baza de date și statusul serverului.
+            </p>
+            <Link href="/api/health" target="_blank">
+              <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-8 border-border/50">
+                Vezi Status JSON
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            </Link>
+          </Card>
+        </div>
+
         {/* Recent Activity / Content Table */}
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
           <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-background">
@@ -186,6 +253,3 @@ export default async function AdminDashboard() {
   )
 }
 
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ')
-}

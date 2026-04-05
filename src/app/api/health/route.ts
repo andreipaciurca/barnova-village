@@ -28,17 +28,23 @@ export async function GET() {
     {
       status: 'healthy',
       timestamp: new Date().toISOString(),
-      version: '1.2.0',
+      version: '1.2.1',
       uptime: process.uptime(),
       memoryUsage: process.memoryUsage(),
       services: {
         vercel: {
           connected: isVercel,
-          environment: process.env.VERCEL_ENV || 'local'
+          environment: process.env.VERCEL_ENV || 'local',
+          logsUrl: isVercel ? `https://vercel.com/${process.env.VERCEL_ORG_ID || 'dashboard'}/${process.env.VERCEL_PROJECT_ID || 'projects'}/logs` : null
         },
         supabase: {
-          status: supabaseStatus
+          status: supabaseStatus,
+          logsUrl: 'https://supabase.com/dashboard/project/_/logs'
         }
+      },
+      monitoring: {
+        vercelDashboard: 'https://vercel.com/dashboard',
+        supabaseDashboard: 'https://supabase.com/dashboard'
       }
     },
     { status: 200 }

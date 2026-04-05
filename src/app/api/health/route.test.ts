@@ -32,8 +32,11 @@ describe('Health API', () => {
 
     expect(response.status).toBe(200);
     expect(data.status).toBe('healthy');
+    expect(data.version).toBe('1.2.1');
     expect(data.services.vercel.connected).toBe(false);
     expect(data.services.supabase.status).toBe('connected');
+    expect(data.services.supabase.logsUrl).toBeDefined();
+    expect(data.monitoring.vercelDashboard).toBe('https://vercel.com/dashboard');
   });
 
   it('detects Vercel environment', async () => {

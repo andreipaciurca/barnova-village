@@ -129,11 +129,9 @@ To keep the site updated with the latest leadership information, we use a combin
 - `npm test`: Runs the test suite (Vitest).
 
 ### Health Monitoring & Logs
-The project includes an advanced health monitoring endpoint at [/api/health](https://barnova.vercel.app/api/health) that tracks:
-- **System Status**: Uptime, memory usage, and versioning.
-- **Supabase Connectivity**: Verifies if the application can successfully communicate with the PostgreSQL database.
-- **Vercel Environment**: Detects if the application is running in a Vercel production or preview environment.
-- **Diagnostic Links**: Provides direct links to official Vercel and Supabase logs for troubleshooting.
+The project includes a comprehensive health dashboard and API:
+- **Health Dashboard**: [barnova.vercel.app/health](https://barnova.vercel.app/health) - Visual monitoring of services and uptime.
+- **API Status**: [/api/health](https://barnova.vercel.app/api/health) - JSON endpoint tracking system status, memory, and database connectivity.
 
 ### 📊 Accessing Logs (Production)
 To troubleshoot issues in production, visit:

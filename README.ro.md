@@ -136,11 +136,9 @@ Pentru a menține site-ul la zi cu cele mai recente informații despre conducere
 - `npm test`: Rulează suita de teste (Vitest).
 
 ### Monitorizare Stare & Log-uri (Health)
-Proiectul include un sistem avansat de monitorizare la [/api/health](https://barnova.vercel.app/api/health) care verifică:
-- **Starea Sistemului**: Timp de funcționare (uptime), utilizarea memoriei și versiunea.
-- **Conectivitate Supabase**: Verifică dacă aplicația poate comunica cu succes cu baza de date PostgreSQL.
-- **Mediu Vercel**: Detectează dacă aplicația rulează în mediul de producție sau preview din Vercel.
-- **Link-uri Diagnotic**: Oferă link-uri directe către log-urile oficiale din Vercel și Supabase.
+Proiectul include un dashboard complet și un API de monitorizare:
+- **Dashboard Sănătate**: [barnova.vercel.app/health](https://barnova.vercel.app/health) - Monitorizare vizuală a serviciilor și a timpului de funcționare.
+- **API Status**: [/api/health](https://barnova.vercel.app/api/health) - Endpoint JSON pentru diagnoza sistemului, memoriei și a bazei de date.
 
 ### 📊 Accesarea Log-urilor (Producție)
 Pentru a depana problemele în producție, accesați:

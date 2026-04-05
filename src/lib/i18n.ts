@@ -166,6 +166,26 @@ export const translations = {
         last_login: 'Ultima autentificare',
         actions: 'Acțiuni',
         back: 'Înapoi la Dashboard',
+      },
+      settings: {
+        title: 'Setări Site',
+        subtitle: 'Configurează parametrii generali ai portalului Bârnova Village.',
+        general: {
+          title: 'Informații Generale',
+          site_name: 'Nume Site',
+          site_description: 'Descriere Site',
+          contact_email: 'Email Contact',
+        },
+        features: {
+          title: 'Funcționalități Active',
+          show_news: 'Afișează Știri',
+          show_stats: 'Afișează Statistici',
+          show_weather: 'Afișează Vremea',
+        },
+        save: 'Salvează Modificările',
+        success: 'Setările au fost salvate cu succes!',
+        error: 'Eroare la salvarea setărilor.',
+        back: 'Înapoi la Dashboard',
       }
     }
   },
@@ -327,6 +347,26 @@ export const translations = {
         role: 'Role',
         last_login: 'Last Login',
         actions: 'Actions',
+        back: 'Back to Dashboard',
+      },
+      settings: {
+        title: 'Site Settings',
+        subtitle: 'Configure general parameters of the Bârnova Village portal.',
+        general: {
+          title: 'General Information',
+          site_name: 'Site Name',
+          site_description: 'Site Description',
+          contact_email: 'Contact Email',
+        },
+        features: {
+          title: 'Active Features',
+          show_news: 'Show News',
+          show_stats: 'Show Stats',
+          show_weather: 'Show Weather',
+        },
+        save: 'Save Changes',
+        success: 'Settings saved successfully!',
+        error: 'Error saving settings.',
         back: 'Back to Dashboard',
       }
     }

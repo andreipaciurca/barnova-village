@@ -8,7 +8,6 @@ import {
   FileText, 
   Users as UsersIcon, 
   LogOut, 
-  BarChart, 
   Globe,
   PlusCircle,
   Pencil,
@@ -18,20 +17,26 @@ import {
   Activity,
   Zap,
   ExternalLink,
-  ChevronLeft
+  ChevronLeft,
+  UserCheck,
+  Mail,
+  Clock,
+  Save,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
 import { translations, Language } from '@/lib/i18n'
 import { AdminLanguageToggle } from '@/components/ui/AdminLanguageToggle'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { revalidatePath } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ lang?: string }>
+  searchParams: Promise<{ lang?: string; success?: string; error?: string }>
 }) {
   const params = await searchParams
   const lang = (params.lang === 'en' ? 'en' : 'ro') as Language
@@ -43,6 +48,24 @@ export default async function AdminUsersPage({
 
   if (!user) {
     redirect(`/admin/login?lang=${lang}`)
+  }
+
+  async function updateProfileAction(formData: FormData) {
+    'use server'
+    const service = await getServerService()
+    const full_name = formData.get('full_name') as string
+    
+    // În Supabase Auth, putem actualiza metadatele utilizatorului curent
+    const { error } = await service.client.auth.updateUser({
+      data: { full_name }
+    })
+
+    if (!error) {
+      revalidatePath('/admin/users')
+      redirect(`/admin/users?lang=${lang}&success=true`)
+    } else {
+      redirect(`/admin/users?lang=${lang}&error=true`)
+    }
   }
 
   return (
@@ -107,10 +130,6 @@ export default async function AdminUsersPage({
       <main className="flex-grow p-6 lg:p-12 overflow-y-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
-            <div className="flex items-center gap-4 mb-4 lg:hidden">
-              <AdminLanguageToggle currentLang={lang} />
-              <ThemeToggle />
-            </div>
             <h2 className="text-4xl font-black tracking-tight mb-2">{t.title}</h2>
             <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
           </div>
@@ -122,41 +141,84 @@ export default async function AdminUsersPage({
           </Link>
         </header>
 
-        <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-background">
-          <div className="p-10 border-b border-border/50">
-            <h3 className="text-2xl font-black tracking-tight">{t.current_user}</h3>
+        {params.success && (
+          <div className="mb-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] flex items-center gap-4 text-emerald-600 animate-in fade-in slide-in-from-top-4 duration-500">
+            <CheckCircle2 className="w-6 h-6" />
+            <p className="font-bold">{lang === 'ro' ? 'Profil actualizat cu succes!' : 'Profile updated successfully!'}</p>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-muted/30">
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.email}</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.role}</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.last_login}</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">{t.actions}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                <tr className="hover:bg-muted/20 transition-colors">
-                  <td className="px-10 py-6 font-bold">{user.email}</td>
-                  <td className="px-10 py-6">
-                    <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
-                      {navT.admin_tag}
-                    </span>
-                  </td>
-                  <td className="px-10 py-6 text-sm text-muted-foreground font-medium">
+        )}
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* User Profile Card */}
+          <Card className="xl:col-span-1 rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background flex flex-col items-center text-center">
+            <div className="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6 ring-8 ring-primary/5">
+              <UsersIcon className="w-16 h-16" />
+            </div>
+            <h3 className="text-2xl font-black tracking-tight mb-1">{user.user_metadata?.full_name || user.email?.split('@')[0]}</h3>
+            <p className="text-sm font-black text-primary uppercase tracking-widest mb-8">{navT.admin_tag}</p>
+            
+            <div className="w-full space-y-4 text-left">
+              <div className="p-4 rounded-2xl bg-muted/30 flex items-center gap-4">
+                <Mail className="w-5 h-5 text-muted-foreground" />
+                <div className="overflow-hidden">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.email}</p>
+                  <p className="font-bold truncate">{user.email}</p>
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-muted/30 flex items-center gap-4">
+                <UserCheck className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.role}</p>
+                  <p className="font-bold">{navT.admin_tag}</p>
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-muted/30 flex items-center gap-4">
+                <Clock className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.last_login}</p>
+                  <p className="font-bold text-sm">
                     {new Date(user.last_sign_in_at || '').toLocaleString(lang === 'ro' ? 'ro-RO' : 'en-US')}
-                  </td>
-                  <td className="px-10 py-6 text-right">
-                    <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-border/50" disabled>
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </Card>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Edit Profile Form */}
+          <Card className="xl:col-span-2 rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background">
+            <h3 className="text-2xl font-black tracking-tight mb-8">{lang === 'ro' ? 'Editează Profil' : 'Edit Profile'}</h3>
+            <form action={updateProfileAction} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">
+                  {lang === 'ro' ? 'Nume Complet' : 'Full Name'}
+                </label>
+                <input 
+                  name="full_name"
+                  type="text" 
+                  defaultValue={user.user_metadata?.full_name || ''}
+                  placeholder="ex: Andrei Alexandru"
+                  className="w-full bg-muted/30 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">{t.email}</label>
+                <input 
+                  type="email" 
+                  value={user.email}
+                  disabled
+                  className="w-full bg-muted/10 border-none rounded-2xl px-6 py-4 font-bold text-muted-foreground cursor-not-allowed"
+                />
+                <p className="text-[10px] text-muted-foreground ml-4 font-bold italic">
+                  {lang === 'ro' ? '* Email-ul nu poate fi modificat pentru conturile administrative.' : '* Email cannot be changed for administrative accounts.'}
+                </p>
+              </div>
+              <Button type="submit" className="w-full rounded-2xl h-14 font-black gap-2 shadow-xl shadow-primary/10">
+                <Save className="w-5 h-5" />
+                {lang === 'ro' ? 'Salvează Profilul' : 'Save Profile'}
+              </Button>
+            </form>
+          </Card>
+        </div>
       </main>
     </div>
   )

@@ -13,8 +13,13 @@ export interface IPostService {
   deletePost(id: string): Promise<any>
 }
 
+export interface ISettingsService {
+  getSettings(id: string): Promise<any>
+  updateSettings(id: string, value: any): Promise<any>
+}
+
 @Service()
-export class SupabaseService implements IAuthService, IPostService {
+export class SupabaseService implements IAuthService, IPostService, ISettingsService {
   private _client: any
 
   set client(c: any) {
@@ -61,5 +66,14 @@ export class SupabaseService implements IAuthService, IPostService {
 
   async deletePost(id: string) {
     return await this.client.from('posts').delete().eq('id', id)
+  }
+
+  async getSettings(id: string) {
+    const { data } = await this.client.from('site_settings').select('value').eq('id', id).single()
+    return data?.value || {}
+  }
+
+  async updateSettings(id: string, value: any) {
+    return await this.client.from('site_settings').upsert({ id, value, updated_at: new Date().toISOString() })
   }
 }

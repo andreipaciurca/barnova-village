@@ -51,7 +51,7 @@ export function GovernanceSection({ data, t }: GovernanceSectionProps) {
                 </span>
                 <h3 className="text-2xl font-bold mb-1">{data.mayor}</h3>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <BadgeCheck size={14} className="text-blue-500" />
+                  {data.mayorVerified && <BadgeCheck size={14} className="text-blue-500" />}
                   PNL
                 </p>
               </div>
@@ -74,7 +74,7 @@ export function GovernanceSection({ data, t }: GovernanceSectionProps) {
                 </span>
                 <h3 className="text-2xl font-bold mb-1">{data.viceMayor}</h3>
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <BadgeCheck size={14} className="text-blue-500" />
+                  {data.viceMayorVerified && <BadgeCheck size={14} className="text-blue-500" />}
                   PNL
                 </p>
               </div>
@@ -107,7 +107,7 @@ export function GovernanceSection({ data, t }: GovernanceSectionProps) {
                 className="p-4 rounded-xl bg-background/40 border border-border/50 hover:border-primary/30 transition-colors group"
               >
                 <div className="flex items-center gap-2 font-semibold text-foreground group-hover:text-primary transition-colors">
-                  <BadgeCheck size={14} className="text-blue-500 shrink-0" />
+                  {member.isVerified && <BadgeCheck size={14} className="text-blue-500 shrink-0" />}
                   {member.name}
                 </div>
                 <div className="flex items-center justify-between mt-1">

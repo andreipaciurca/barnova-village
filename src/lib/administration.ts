@@ -6,33 +6,38 @@ export interface CouncilMember {
   name: string;
   party: string;
   role?: string;
+  isVerified?: boolean;
 }
 
 export interface AdministrationData {
   mayor: string;
+  mayorVerified?: boolean;
   viceMayor: string;
+  viceMayorVerified?: boolean;
   councilMembers: CouncilMember[];
 }
 
 const DEFAULT_DATA: AdministrationData = {
   mayor: 'BALAN MIHAI',
+  mayorVerified: true,
   viceMayor: 'Rusu Constantin Lucian',
+  viceMayorVerified: true,
   councilMembers: [
-    { name: 'RUSU CONSTANTIN-LUCIAN', party: 'PNL' },
-    { name: 'ACATRINEI FLORIN', party: 'PNL' },
-    { name: 'LUCA CONSTANTIN-CRISTIAN', party: 'PNL' },
-    { name: 'CIOBANU MIRCEA', party: 'PNL' },
-    { name: 'LUCA CĂTĂLIN-IONUŢ', party: 'PNL' },
-    { name: 'TINCU GEORGEL-DANIEL', party: 'PSD' },
-    { name: 'POPA DAN-CONSTANTIN', party: 'PSD' },
-    { name: 'LUCA FĂNICĂ', party: 'PSD' },
-    { name: 'VORNICU FLORIN', party: 'PSD' },
-    { name: 'STRATULAT-PETERCĂ EMMA-CECILIA', party: 'USR' },
-    { name: 'DUMITRU RADU', party: 'USR' },
-    { name: 'ȘOȘU GEORGETA-IULIANA', party: 'USR' },
-    { name: 'COBZARU IONUȚ-CĂTĂLIN', party: 'USR' },
-    { name: 'COLOTIN SEBASTIAN', party: 'S.O.S. ROMÂNIA' },
-    { name: 'COVALIU LIDIA-CAMELIA', party: 'PARTIDUL VERDE' }
+    { name: 'RUSU CONSTANTIN-LUCIAN', party: 'PNL', isVerified: true },
+    { name: 'ACATRINEI FLORIN', party: 'PNL', isVerified: true },
+    { name: 'LUCA CONSTANTIN-CRISTIAN', party: 'PNL', isVerified: true },
+    { name: 'CIOBANU MIRCEA', party: 'PNL', isVerified: true },
+    { name: 'LUCA CĂTĂLIN-IONUŢ', party: 'PNL', isVerified: true },
+    { name: 'TINCU GEORGEL-DANIEL', party: 'PSD', isVerified: true },
+    { name: 'POPA DAN-CONSTANTIN', party: 'PSD', isVerified: true },
+    { name: 'LUCA FĂNICĂ', party: 'PSD', isVerified: true },
+    { name: 'VORNICU FLORIN', party: 'PSD', isVerified: true },
+    { name: 'STRATULAT-PETERCĂ EMMA-CECILIA', party: 'USR', isVerified: true },
+    { name: 'DUMITRU RADU', party: 'USR', isVerified: true },
+    { name: 'ȘOȘU GEORGETA-IULIANA', party: 'USR', isVerified: true },
+    { name: 'COBZARU IONUȚ-CĂTĂLIN', party: 'USR', isVerified: true },
+    { name: 'COLOTIN SEBASTIAN', party: 'S.O.S. ROMÂNIA', isVerified: true },
+    { name: 'COVALIU LIDIA-CAMELIA', party: 'PARTIDUL VERDE', isVerified: true }
   ],
 };
 
@@ -45,10 +50,13 @@ export const getAdministrationData = cache(async function (): Promise<Administra
       
       return {
         mayor: data.primar?.nume || DEFAULT_DATA.mayor,
+        mayorVerified: !!data.primar?.bec_voturi,
         viceMayor: data.viceprimar?.nume || DEFAULT_DATA.viceMayor,
+        viceMayorVerified: !!data.primar?.bec_voturi, // If mayor is verified from BEC, we assume the structure is synced
         councilMembers: data.consiliu_local?.map((m: any) => ({
           name: m.nume,
-          party: m.partid
+          party: m.partid,
+          isVerified: !!data.metadata?.ultima_actualizare_bec
         })) || DEFAULT_DATA.councilMembers
       };
     }

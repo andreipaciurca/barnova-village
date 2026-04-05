@@ -157,9 +157,9 @@ export default async function Home() {
             <div>
               <h5 className="font-bold text-slate-900 mb-6 uppercase text-xs tracking-widest">Contact</h5>
               <ul className="space-y-4 text-sm text-slate-600">
-                <li>Str. Principală Nr. 1, Bârnova</li>
+                <li>Str. Nicolae Titulescu Nr. 10, Bârnova</li>
                 <li>contact@primariabarnova.ro</li>
-                <li>+40 232 234 567</li>
+                <li>+40 232 294 120</li>
               </ul>
             </div>
           </div>

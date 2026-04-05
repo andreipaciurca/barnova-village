@@ -72,6 +72,7 @@ We've implemented a complete administrative system using a modern, secure stack.
    - Enter the email address you want to use for administration. Only emails in this list can log in.
 4. **Execute SQL Schema:**
    - Open the `SQL Editor` in Supabase and run the content of the `supabase/schema.sql` file from this project to create the required tables.
+   - **IMPORTANT NOTE:** If you get the error `Could not find the table 'public.posts' in the schema cache`, go to `Settings > API` in the Supabase dashboard and click the **"PostgREST Cache: Refresh"** button (or simply ensure the tables were created successfully).
 5. **Environment Variables:**
    - In Vercel (or `.env.local`), add the following keys from `Project Settings` -> `API`:
      ```bash

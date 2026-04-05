@@ -74,6 +74,7 @@ Am implementat un sistem administrativ complet folosind un stack modern și secu
    - Introdu adresa de email pe care dorești să o folosești pentru administrare. Doar email-urile din această listă se pot loga.
 4. **Execută Schema SQL:**
    - Deschide `SQL Editor` în Supabase și rulează conținutul fișierului `supabase/schema.sql` din acest proiect pentru a crea tabelele necesare.
+   - **NOTĂ IMPORTANTĂ:** Dacă primești eroarea `Could not find the table 'public.posts' in the schema cache`, mergi la `Settings > API` în dashboard-ul Supabase și apasă pe butonul **"PostgREST Cache: Refresh"** (sau pur și simplu asigură-te că tabelele au fost create cu succes).
 5. **Variabile de Mediu:**
    - În Vercel (sau `.env.local`), adaugă următoarele chei preluate din `Project Settings` -> `API`:
      ```bash

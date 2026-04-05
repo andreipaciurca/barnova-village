@@ -36,5 +36,8 @@ coverage/
 playwright-report/
 test-results/
 
+# Agent Skills
+.agents/
+
 # Junie
 .junie/

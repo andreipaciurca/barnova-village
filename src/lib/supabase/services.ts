@@ -32,10 +32,11 @@ export class SupabaseService implements IAuthService, IPostService {
   }
 
   async signInWithOtp(email: string) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '')
     return await this.client.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+        emailRedirectTo: `${siteUrl}/auth/callback`,
       },
     })
   }

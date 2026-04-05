@@ -15,14 +15,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
-          cache-dependency-path: barnova-village-2026/package.json
+          cache-dependency-path: package.json
 
       - name: Install dependencies
-        run: cd barnova-village-2026 && npm install
+        run: npm install
 
       - name: Build
-        run: cd barnova-village-2026 && npm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_WP_API_URL: https://primariabarnova.ro/wp-json/wp/v2

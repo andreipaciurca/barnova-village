@@ -106,7 +106,8 @@ export function GovernanceSection({ data, t }: GovernanceSectionProps) {
                 transition={{ delay: idx * 0.05 }}
                 className="p-4 rounded-xl bg-background/40 border border-border/50 hover:border-primary/30 transition-colors group"
               >
-                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                <div className="flex items-center gap-2 font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <BadgeCheck size={14} className="text-blue-500 shrink-0" />
                   {member.name}
                 </div>
                 <div className="flex items-center justify-between mt-1">

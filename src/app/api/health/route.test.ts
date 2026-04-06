@@ -19,9 +19,9 @@ describe('Health API', () => {
   it('returns healthy status with services information', async () => {
     // Mock successful Supabase connection
     const mockSupabase = {
-      from: vi.fn().mockReturnValue({
-        select: vi.fn().mockResolvedValue({ count: 0, error: null })
-      })
+      from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockResolvedValue({ count: 0, error: null })
     };
     (createClient as any).mockResolvedValue(mockSupabase);
 
@@ -41,12 +41,12 @@ describe('Health API', () => {
   it('detects Vercel environment', async () => {
     process.env.VERCEL = '1';
     process.env.VERCEL_ENV = 'production';
-
+    
     // Mock successful Supabase connection
     const mockSupabase = {
-      from: vi.fn().mockReturnValue({
-        select: vi.fn().mockResolvedValue({ count: 0, error: null })
-      })
+      from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockResolvedValue({ count: 0, error: null })
     };
     (createClient as any).mockResolvedValue(mockSupabase);
 
@@ -60,9 +60,9 @@ describe('Health API', () => {
   it('reports Supabase disconnected on error', async () => {
     // Mock Supabase error
     const mockSupabase = {
-      from: vi.fn().mockReturnValue({
-        select: vi.fn().mockResolvedValue({ count: null, error: { message: 'Database error', code: 'PGRST' } })
-      })
+      from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockResolvedValue({ count: null, error: { message: 'Database error', code: 'PGRST' } })
     };
     (createClient as any).mockResolvedValue(mockSupabase);
 

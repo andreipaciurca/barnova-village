@@ -9,7 +9,7 @@ export async function GET() {
   try {
     const supabase = await createClient();
     // A simple query to check connectivity and get post count
-    const { count, error } = await supabase.from('posts').select('id', { count: 'exact', head: true });
+    const { count, error } = await supabase.from('posts').select('id', { count: 'exact', head: true }).eq('status', 'published');
     
     // If the error is 'PGRST116' (no results) or no error, it's connected
     if (!error || error.code === 'PGRST116') {

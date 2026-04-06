@@ -231,11 +231,14 @@ export default async function AdminDashboard() {
                       <tr key={idx} className="hover:bg-muted/20 transition-colors">
                         <td className="px-10 py-6 font-bold">{post.title}</td>
                         <td className="px-10 py-6">
-                          <span className={cn(
+                            <span className={cn(
                             "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
-                            post.is_published ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                            post.status === "published" ? "bg-emerald-500/10 text-emerald-600" : 
+                            post.status === "archived" ? "bg-slate-500/10 text-slate-600" :
+                            "bg-amber-500/10 text-amber-600"
                           )}>
-                            {post.is_published ? 'Publicat' : 'Draft'}
+                            {post.status === 'published' ? 'Publicat' : 
+                             post.status === 'archived' ? 'Arhivat' : 'Draft'}
                           </span>
                         </td>
                         <td className="px-10 py-6 text-sm text-muted-foreground font-medium">

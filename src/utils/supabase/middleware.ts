@@ -41,5 +41,12 @@ export const updateSession = async (request: NextRequest) => {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Protecție rute admin
+  if (request.nextUrl.pathname.startsWith('/admin') && !user && request.nextUrl.pathname !== '/admin/login') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/admin/login';
+    return NextResponse.redirect(url);
+  }
+
   return supabaseResponse;
 };

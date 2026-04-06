@@ -20,9 +20,7 @@ describe('Health API', () => {
     // Mock successful Supabase connection
     const mockSupabase = {
       from: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({ data: [], error: null })
-        })
+        select: vi.fn().mockResolvedValue({ count: 0, error: null })
       })
     };
     (createClient as any).mockResolvedValue(mockSupabase);
@@ -31,7 +29,8 @@ describe('Health API', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.status).toBe('healthy');
+    expect(data.status).toBe('UP');
+    expect(data.postsCount).toBeDefined();
     expect(data.version).toBe('1.2.1');
     expect(data.services.vercel.connected).toBe(false);
     expect(data.services.supabase.status).toBe('connected');
@@ -46,9 +45,7 @@ describe('Health API', () => {
     // Mock successful Supabase connection
     const mockSupabase = {
       from: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({ data: [], error: null })
-        })
+        select: vi.fn().mockResolvedValue({ count: 0, error: null })
       })
     };
     (createClient as any).mockResolvedValue(mockSupabase);
@@ -64,9 +61,7 @@ describe('Health API', () => {
     // Mock Supabase error
     const mockSupabase = {
       from: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue({ data: null, error: { message: 'Database error', code: 'PGRST' } })
-        })
+        select: vi.fn().mockResolvedValue({ count: null, error: { message: 'Database error', code: 'PGRST' } })
       })
     };
     (createClient as any).mockResolvedValue(mockSupabase);

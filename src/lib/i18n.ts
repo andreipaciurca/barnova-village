@@ -193,6 +193,7 @@ export const translations = {
           system_health: 'Sănătate Sistem',
           visitors: 'Vizitatori Azi',
           status_active: 'Activ',
+          status_inactive: 'Offline',
         },
         recent_posts: {
           title: 'Postări Recente',

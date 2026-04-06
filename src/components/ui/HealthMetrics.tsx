@@ -37,7 +37,7 @@ export function HealthMetrics() {
           </div>
           <div>
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t.system_health}</p>
-            <p className="text-3xl font-black">{data?.status === 'UP' ? t.status_active : '...'}</p>
+            <p className="text-3xl font-black">{data?.status === 'UP' ? t.status_active : t.status_inactive || 'Deconectat'}</p>
           </div>
         </div>
       </Card>

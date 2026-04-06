@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import * as motion from 'framer-motion/client';
 import { Navbar } from '@/components/ui/Navbar';
 import { GovernanceSection } from '@/components/ui/GovernanceSection';
+import { WeatherWidget } from '@/components/ui/WeatherWidget';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -260,6 +261,17 @@ export default async function Home() {
                 </motion.div>
               ))}
             </div>
+
+            {featureSettings.show_weather && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="mb-12"
+              >
+                <WeatherWidget />
+              </motion.div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <motion.div 

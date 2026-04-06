@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronRight, MapPin, Phone, Mail } from 'lucide-react';
+import { Menu, X, ChevronRight, MapPin, Phone, Mail, CloudSun } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './Button';
 import { ThemeToggle } from './ThemeToggle';
 import { SarcasticToggle } from './SarcasticToggle';
+import { createClient } from '@/lib/supabase/client';
 
 interface NavbarProps {
   t: any;
@@ -19,15 +20,26 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
   const [logoClicks, setLogoClicks] = useState(0);
   const { scrollY } = useScroll();
   const router = useRouter();
+  const supabase = createClient();
 
-  const handleLogoClick = () => {
-    setLogoClicks(prev => prev + 1);
-    if (logoClicks + 1 >= 5) {
-      router.push(`/admin/login`);
+  const handleLogoClick = async () => {
+    const nextClicks = logoClicks + 1;
+    setLogoClicks(nextClicks);
+    
+    if (nextClicks >= 5) {
       setLogoClicks(0);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        router.push(`/admin/dashboard`);
+      } else {
+        router.push(`/admin/login`);
+      }
     }
+    
     // Reset clicks after 3 seconds of inactivity
-    setTimeout(() => setLogoClicks(0), 3000);
+    const timer = setTimeout(() => setLogoClicks(0), 3000);
+    return () => clearTimeout(timer);
   };
 
   useMotionValueEvent(scrollY, "change", (latest) => {

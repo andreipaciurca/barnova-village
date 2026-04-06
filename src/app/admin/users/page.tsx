@@ -1,34 +1,20 @@
 import { getServerService } from '@/lib/supabase/services.server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import {
+  ChevronLeft,
+  Clock,
+  Mail,
+  Save,
+  ShieldCheck,
+  Sparkles,
+  UserCheck,
+  Users as UsersIcon,
+} from 'lucide-react'
+import { revalidatePath } from 'next/cache'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { 
-  Plus, 
-  Settings, 
-  FileText, 
-  Users as UsersIcon, 
-  LogOut, 
-  Globe,
-  PlusCircle,
-  Pencil,
-  Trash2,
-  Calendar,
-  LayoutDashboard,
-  Activity,
-  Zap,
-  ExternalLink,
-  ChevronLeft,
-  UserCheck,
-  Mail,
-  Clock,
-  Save,
-  CheckCircle2,
-  AlertCircle
-} from 'lucide-react'
-import Link from 'next/link'
-import { translations } from '@/lib/i18n'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { revalidatePath } from 'next/cache'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,185 +24,171 @@ export default async function AdminUsersPage({
   searchParams: Promise<{ success?: string; error?: string }>
 }) {
   const params = await searchParams
-  const t = translations.ro.admin.users
-  const navT = translations.ro.admin.dashboard.sidebar
-
   const service = await getServerService()
   const user = await service.getUser()
 
   if (!user) {
-    redirect(`/admin/login`)
+    redirect('/admin/login')
   }
 
   async function updateProfileAction(formData: FormData) {
     'use server'
     const service = await getServerService()
     const full_name = formData.get('full_name') as string
-    
-    // În Supabase Auth, putem actualiza metadatele utilizatorului curent
+
     const { error } = await service.client.auth.updateUser({
-      data: { full_name }
+      data: { full_name },
     })
 
     if (!error) {
       revalidatePath('/admin/users')
-      redirect(`/admin/users?success=true`)
+      redirect('/admin/users?success=true')
     } else {
-      redirect(`/admin/users?error=true`)
+      redirect('/admin/users?error=true')
     }
   }
 
+  const initials = (user.user_metadata?.full_name || user.email || 'B')
+    .split(' ')
+    .map((part: string) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+
   return (
-    <div className="min-h-screen bg-muted/10 flex">
-      {/* Sidebar - Same as Dashboard */}
-      <aside className="w-80 bg-background border-r border-border/50 p-8 flex flex-col hidden lg:flex">
-        <div className="flex items-center gap-4 mb-12">
-          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">
-            B
-          </div>
-          <div>
-            <h1 className="text-xl font-black tracking-tighter leading-none">Admin Panel</h1>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Comuna Bârnova</p>
-          </div>
-        </div>
-
-        <nav className="flex-grow space-y-2">
-          <Link href={`/admin/dashboard`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <LayoutDashboard className="w-5 h-5" />
-            {navT.dashboard}
-          </Link>
-          <Link href={`/admin/posts`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <FileText className="w-5 h-5" />
-            {navT.posts}
-          </Link>
-          <Link href={`/admin/users`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
-            <UsersIcon className="w-5 h-5" />
-            {navT.users}
-          </Link>
-          <Link href={`/admin/settings`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <Settings className="w-5 h-5" />
-            {navT.settings}
-          </Link>
-        </nav>
-
-        <div className="pt-8 border-t border-border/50 space-y-6">
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-          </div>
-          
-          <div className="flex items-center gap-4 px-4 py-4 bg-muted/30 rounded-2xl">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-              <UsersIcon className="w-5 h-5" />
+    <AdminShell
+      section="users"
+      title="Utilizatori & acces"
+      subtitle="Gestionează profilul curent și păstrează un control clar asupra conturilor administrative."
+      userEmail={user.email || undefined}
+      actions={
+        <Link href="/admin/dashboard">
+          <Button variant="outline" className="h-14 rounded-full border-border/60 bg-background/70 px-6 font-black">
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Înapoi
+          </Button>
+        </Link>
+      }
+    >
+      <div className="space-y-8">
+        {params.success ? (
+          <Card className="rounded-[2rem] border border-emerald-500/20 bg-emerald-500/10 p-5 text-emerald-700 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]">
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-5 w-5" />
+              <p className="font-bold">Profil actualizat cu succes.</p>
             </div>
-            <div className="overflow-hidden">
-              <p className="text-sm font-black truncate">{user.email}</p>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{navT.admin_tag}</p>
+          </Card>
+        ) : null}
+
+        <div className="grid gap-8 xl:grid-cols-[0.85fr_minmax(0,1.15fr)]">
+          <Card className="overflow-hidden rounded-[2.25rem] border border-border/60 bg-background/80 p-6 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)] md:p-8">
+            <div className="mb-6 flex items-center gap-4">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-primary/10 text-2xl font-black text-primary">
+                {initials}
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Current user</p>
+                <h3 className="text-2xl font-black tracking-tight">
+                  {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Administrator'}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">Cont cu acces administrativ</p>
+              </div>
             </div>
-          </div>
-          
-          <form action="/auth/signout" method="post">
-            <Button variant="outline" className="w-full rounded-2xl font-black gap-2 h-12 text-destructive border-destructive/20 hover:bg-destructive/10">
-              <LogOut className="w-4 h-4" />
-              {navT.logout}
-            </Button>
-          </form>
-        </div>
-      </aside>
 
-      {/* Main Content */}
-      <main className="flex-grow p-6 lg:p-12 overflow-y-auto">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <h2 className="text-4xl font-black tracking-tight mb-2">{t.title}</h2>
-            <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
-          </div>
-          <Link href={`/admin/dashboard`}>
-            <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-6 border-border/50 bg-background/50">
-              <ChevronLeft className="w-5 h-5" />
-              {t.back}
-            </Button>
-          </Link>
-        </header>
-
-        {params.success && (
-          <div className="mb-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] flex items-center gap-4 text-emerald-600 animate-in fade-in slide-in-from-top-4 duration-500">
-            <CheckCircle2 className="w-6 h-6" />
-            <p className="font-bold">Profil actualizat cu succes!</p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* User Profile Card */}
-          <Card className="xl:col-span-1 rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background flex flex-col items-center text-center">
-            <div className="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6 ring-8 ring-primary/5">
-              <UsersIcon className="w-16 h-16" />
-            </div>
-            <h3 className="text-2xl font-black tracking-tight mb-1">{user.user_metadata?.full_name || user.email?.split('@')[0]}</h3>
-            <p className="text-sm font-black text-primary uppercase tracking-widest mb-8">{navT.admin_tag}</p>
-            
-            <div className="w-full space-y-4 text-left">
-              <div className="p-4 rounded-2xl bg-muted/30 flex items-center gap-4">
-                <Mail className="w-5 h-5 text-muted-foreground" />
-                <div className="overflow-hidden">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.email}</p>
-                  <p className="font-bold truncate">{user.email}</p>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
+                <div className="flex items-center gap-3">
+                  <Mail className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{'Email'}</p>
+                    <p className="font-bold">{user.email}</p>
+                  </div>
                 </div>
               </div>
-              <div className="p-4 rounded-2xl bg-muted/30 flex items-center gap-4">
-                <UserCheck className="w-5 h-5 text-muted-foreground" />
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.role}</p>
-                  <p className="font-bold">{navT.admin_tag}</p>
+              <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
+                <div className="flex items-center gap-3">
+                  <UserCheck className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Rol</p>
+                    <p className="font-bold">Administrator</p>
+                  </div>
                 </div>
               </div>
-              <div className="p-4 rounded-2xl bg-muted/30 flex items-center gap-4">
-                <Clock className="w-5 h-5 text-muted-foreground" />
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.last_login}</p>
-                  <p className="font-bold text-sm">
-                    {new Date(user.last_sign_in_at || '').toLocaleString('ro-RO')}
-                  </p>
+              <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
+                <div className="flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Ultima autentificare</p>
+                    <p className="font-bold">
+                      {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('ro-RO') : 'Nespecificat'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
+                <div className="flex items-center gap-3">
+                  <ShieldCheck className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Access tier</p>
+                    <p className="font-bold">Protected admin session</p>
+                  </div>
                 </div>
               </div>
             </div>
           </Card>
 
-          {/* Edit Profile Form */}
-          <Card className="xl:col-span-2 rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background">
-            <h3 className="text-2xl font-black tracking-tight mb-8">Editează Profil</h3>
+          <Card className="rounded-[2.25rem] border border-border/60 bg-background/80 p-6 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)] md:p-8">
+            <div className="mb-8 flex items-center gap-3">
+              <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                <UsersIcon className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Profile editor</p>
+                <h3 className="text-xl font-black tracking-tight">Editează profilul</h3>
+              </div>
+            </div>
+
+            {params.error ? (
+              <div className="mb-6 rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-destructive">
+                Nu am putut salva profilul.
+              </div>
+            ) : null}
+
             <form action={updateProfileAction} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">
-                  Nume Complet
+                <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                  Nume complet
                 </label>
-                <input 
+                <input
                   name="full_name"
-                  type="text" 
+                  type="text"
                   defaultValue={user.user_metadata?.full_name || ''}
                   placeholder="ex: Andrei Alexandru"
-                  className="w-full bg-muted/30 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full rounded-2xl border border-border/60 bg-muted/30 px-6 py-4 font-bold outline-none transition-all placeholder:text-muted-foreground/70 focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
                 />
               </div>
+
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">{t.email}</label>
-                <input 
-                  type="email" 
-                  value={user.email}
+                <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">Email</label>
+                <input
+                  type="email"
+                  value={user.email || ''}
                   disabled
-                  className="w-full bg-muted/10 border-none rounded-2xl px-6 py-4 font-bold text-muted-foreground cursor-not-allowed"
+                  className="w-full cursor-not-allowed rounded-2xl border border-border/60 bg-muted/10 px-6 py-4 font-bold text-muted-foreground"
                 />
-                <p className="text-[10px] text-muted-foreground ml-4 font-bold italic">
-                  * Email-ul nu poate fi modificat pentru conturile administrative.
+                <p className="ml-1 text-xs text-muted-foreground">
+                  Email-ul rămâne blocat pentru siguranța conturilor administrative.
                 </p>
               </div>
-              <Button type="submit" className="w-full rounded-2xl h-14 font-black gap-2 shadow-xl shadow-primary/10">
-                <Save className="w-5 h-5" />
-                Salvează Profilul
+
+              <Button type="submit" className="h-16 w-full rounded-2xl text-lg font-black shadow-xl shadow-primary/20">
+                <Save className="mr-2 h-5 w-5" />
+                Salvează profilul
               </Button>
             </form>
           </Card>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   )
 }

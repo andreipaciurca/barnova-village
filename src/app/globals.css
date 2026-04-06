@@ -2,7 +2,7 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -44,39 +44,39 @@
 
 @layer base {
   :root {
-    --background: #fbfcfe;
-    --foreground: #020617;
-    --primary: #002B7F; /* Romania Royal Blue (Pantone 280c) */
+    --background: #f6f3ec;
+    --foreground: #111827;
+    --primary: #0f4c81;
     --primary-foreground: #ffffff;
-    --secondary: #ffffff;
+    --secondary: #fffdfa;
     --secondary-foreground: #020617;
-    --muted: #f1f5f9;
-    --muted-foreground: #475569;
-    --accent: #FCD116; /* Romania Yellow */
+    --muted: #ece6db;
+    --muted-foreground: #5b6472;
+    --accent: #d4a017;
     --accent-foreground: #020617;
-    --border: #e2e8f0;
-    --input: #e2e8f0;
-    --ring: #002B7F;
-    --card: #ffffff;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --ring: #0f4c81;
+    --card: #fffdf9;
     --card-foreground: #020617;
-    --radius: 1.5rem;
+    --radius: 1.4rem;
   }
 
   .dark {
-    --background: #030712;
-    --foreground: #f8fafc;
-    --primary: #3b82f6;
-    --primary-foreground: #020617;
-    --secondary: #0f172a;
+    --background: #07111f;
+    --foreground: #f5f7fb;
+    --primary: #79a8ff;
+    --primary-foreground: #07111f;
+    --secondary: #0e1726;
     --secondary-foreground: #f8fafc;
-    --muted: #111827;
+    --muted: #101827;
     --muted-foreground: #94a3b8;
-    --accent: #fcd116;
-    --accent-foreground: #020617;
-    --border: #1f2937;
-    --input: #1f2937;
-    --ring: #3b82f6;
-    --card: #0f172a;
+    --accent: #f3c44e;
+    --accent-foreground: #07111f;
+    --border: #1d2b40;
+    --input: #1d2b40;
+    --ring: #79a8ff;
+    --card: #0d1727;
     --card-foreground: #f8fafc;
   }
 
@@ -87,6 +87,9 @@
   body {
     @apply bg-background text-foreground antialiased font-sans selection:bg-primary/20;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-image:
+      radial-gradient(circle at top left, rgba(15, 76, 129, 0.08), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(212, 160, 23, 0.08), transparent 26%);
   }
 
   h1, h2, h3, h4, h5, h6 {

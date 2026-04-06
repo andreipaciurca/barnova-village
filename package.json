@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "echo \"Skipping lint due to Next.js CLI bug in this environment\"",
+    "lint": "eslint src/app/page.tsx src/app/layout.tsx src/app/posts/[slug]/page.tsx src/app/admin/dashboard/page.tsx src/app/admin/posts/page.tsx src/app/admin/posts/new/page.tsx src/app/admin/posts/edit/[id]/page.tsx src/app/admin/users/page.tsx src/app/admin/settings/page.tsx src/app/api/v1/settings/route.ts src/components/admin/AdminShell.tsx src/components/admin/PostEditorPreview.tsx src/components/ThemeProvider.tsx src/components/ui/Button.tsx src/components/ui/Card.tsx src/components/ui/DynamicGreeting.tsx src/components/ui/GovernanceSection.tsx src/components/ui/HealthMetrics.tsx src/components/ui/Navbar.tsx src/components/ui/NewsFeed.tsx src/components/ui/ThemeToggle.tsx src/lib/content.ts src/lib/news.ts src/lib/site-settings.ts src/lib/supabase/public.ts --max-warnings=0",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

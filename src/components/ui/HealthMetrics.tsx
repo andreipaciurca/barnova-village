@@ -1,58 +1,73 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import { translations } from '@/lib/i18n';
-import { Activity, Database, Zap } from 'lucide-react';
-import { Card } from './Card';
+import React, { useEffect, useState } from 'react'
+import { translations } from '@/lib/i18n'
+import { Activity, Database, Zap } from 'lucide-react'
+import { Card } from './Card'
+
+interface HealthData {
+  status: string
+  postsCount: number
+  timestamp: string
+  version: string
+}
 
 export function HealthMetrics() {
-  const [data, setData] = useState<any>(null);
-  const t = translations.ro.admin.dashboard.stats;
+  const [data, setData] = useState<HealthData | null>(null)
+  const t = translations.ro.admin.dashboard.stats
 
   useEffect(() => {
     fetch('/api/health')
-      .then(res => res.json())
-      .then(setData)
-      .catch(console.error);
-  }, []);
+      .then((res) => res.json())
+      .then((payload) => setData(payload as HealthData))
+      .catch(console.error)
+  }, [])
+
+  const cards = [
+    {
+      label: t.active_posts,
+      value: data?.postsCount ?? '...',
+      accent: 'from-blue-500 to-cyan-500',
+      icon: Zap,
+      caption: 'Articole publicate',
+    },
+    {
+      label: t.system_health,
+      value: data?.status === 'UP' ? t.status_active : t.status_inactive || 'Deconectat',
+      accent: 'from-emerald-500 to-teal-500',
+      icon: Activity,
+      caption: data?.version ? `v${data.version}` : 'Live',
+    },
+    {
+      label: t.visitors,
+      value: '342',
+      accent: 'from-amber-500 to-orange-500',
+      icon: Database,
+      caption: 'Trafic estimat',
+    },
+  ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-      <Card className="p-6 border-none shadow-xl shadow-blue-500/5 bg-background/50 backdrop-blur-xl group hover:shadow-blue-500/10 transition-all">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
-            <Zap className="w-6 h-6" />
+    <div className="grid gap-4 md:grid-cols-3">
+      {cards.map((card) => (
+        <Card
+          key={card.label}
+          className="overflow-hidden rounded-[2rem] border border-border/60 bg-background/80 p-5 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                {card.label}
+              </div>
+              <div className="mt-3 text-3xl font-black tracking-tight">{card.value}</div>
+              <p className="mt-2 text-sm text-muted-foreground">{card.caption}</p>
+            </div>
+            <div className={`rounded-2xl bg-gradient-to-br ${card.accent} p-3 text-white shadow-lg`}>
+              <card.icon className="h-6 w-6" />
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t.active_posts}</p>
-            <p className="text-3xl font-black">{data?.postsCount ?? '...'}</p>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6 border-none shadow-xl shadow-emerald-500/5 bg-background/50 backdrop-blur-xl group hover:shadow-emerald-500/10 transition-all">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-            <Activity className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t.system_health}</p>
-            <p className="text-3xl font-black">{data?.status === 'UP' ? t.status_active : t.status_inactive || 'Deconectat'}</p>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6 border-none shadow-xl shadow-amber-500/5 bg-background/50 backdrop-blur-xl group hover:shadow-amber-500/10 transition-all">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
-            <Database className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t.visitors}</p>
-            <p className="text-3xl font-black">342</p>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      ))}
     </div>
-  );
+  )
 }

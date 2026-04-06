@@ -15,7 +15,7 @@ export const translations = {
       tourism: 'Turism',
       contact: 'Contact',
       bureaucracy: 'Birocrație',
-      rumors: 'Zvonuri',
+      updates: 'Actualizări',
     },
     hero: {
       title: 'Viitorul Comunei Bârnova',
@@ -80,7 +80,7 @@ export const translations = {
         tourism: 'Groapa cu Lei',
         contact: 'Nu deranjați',
         bureaucracy: 'Dosar cu Șină',
-        rumors: 'Radio Șanț',
+        updates: 'Radio Șanț',
       },
       hero: {
         title: 'Viitorul Comunei (Dacă avem noroc)',

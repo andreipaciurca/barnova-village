@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronRight, MapPin, Phone, Mail, CloudSun } from 'lucide-react';
+import { Menu, X, ChevronRight, MapPin, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './Button';
 import { ThemeToggle } from './ThemeToggle';
@@ -10,7 +10,17 @@ import { SarcasticToggle } from './SarcasticToggle';
 import { createClient } from '@/lib/supabase/client';
 
 interface NavbarProps {
-  t: any;
+  t: {
+    nav: {
+      home: string;
+      admin: string;
+      services: string;
+      tourism: string;
+      bureaucracy: string;
+      contact: string;
+      updates: string;
+    };
+  };
   isSarcastic?: boolean;
 }
 
@@ -18,6 +28,7 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoClicks, setLogoClicks] = useState(0);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { scrollY } = useScroll();
   const router = useRouter();
   const supabase = createClient();
@@ -25,22 +36,34 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
   const handleLogoClick = async () => {
     const nextClicks = logoClicks + 1;
     setLogoClicks(nextClicks);
-    
+
     if (nextClicks >= 5) {
       setLogoClicks(0);
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (session) {
         router.push(`/admin/dashboard`);
       } else {
         router.push(`/admin/login`);
       }
     }
-    
-    // Reset clicks after 3 seconds of inactivity
-    const timer = setTimeout(() => setLogoClicks(0), 3000);
-    return () => clearTimeout(timer);
   };
+
+  useEffect(() => {
+    if (resetTimer.current) {
+      clearTimeout(resetTimer.current);
+    }
+
+    resetTimer.current = setTimeout(() => setLogoClicks(0), 3000);
+
+    return () => {
+      if (resetTimer.current) {
+        clearTimeout(resetTimer.current);
+      }
+    };
+  }, [logoClicks]);
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
@@ -58,11 +81,11 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
 
   const navItems = [
     { label: t.nav.home, href: '#home' },
-    { label: t.nav.admin, href: '#admin' },
+    { label: t.nav.admin, href: '#administration' },
     { label: t.nav.services, href: '#services' },
-    { label: t.nav.tourism, href: '#tourism' },
-    { label: t.nav.bureaucracy, href: '#digital' },
-    { label: t.nav.rumors, href: '#news' },
+    { label: t.nav.tourism, href: '#archive' },
+    { label: t.nav.bureaucracy, href: '#news' },
+    { label: t.nav.updates, href: '#contact' },
   ];
 
   return (
@@ -94,11 +117,12 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
           
           <div className="hidden lg:flex items-center space-x-1">
             {navItems.map((item) => (
-              <a 
-                key={item.label}
-                href={item.href} 
-                className="px-5 py-2.5 text-sm font-bold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary transition-all rounded-full hover:bg-primary/5 active:scale-95 relative group"
-              >
+                <a 
+                  key={item.label}
+                  href={item.href} 
+                  onClick={closeMobileMenu}
+                  className="px-5 py-2.5 text-sm font-bold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary transition-all rounded-full hover:bg-primary/5 active:scale-95 relative group"
+                >
                 {item.label}
                 <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-1 bg-primary rounded-full transition-all group-hover:w-1/2 opacity-0 group-hover:opacity-100" />
               </a>
@@ -135,12 +159,13 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
             >
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-1 gap-2">
-                  {navItems.map((item) => (
-                    <a 
-                      key={item.label}
-                      href={item.href}
-                      className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 text-foreground font-bold active:scale-[0.98] transition-all"
-                    >
+                {navItems.map((item) => (
+                  <a 
+                    key={item.label}
+                    href={item.href}
+                    onClick={closeMobileMenu}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 text-foreground font-bold active:scale-[0.98] transition-all"
+                  >
                       {item.label}
                       <ChevronRight className="w-5 h-5 text-primary/50" />
                     </a>

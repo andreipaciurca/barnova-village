@@ -1,5 +1,5 @@
 import './globals.css'
-import { Inter, Montserrat } from 'next/font/google'
+import { Inter, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Analytics } from '@vercel/analytics/next'
 
@@ -9,18 +9,35 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-const montserrat = Montserrat({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-montserrat',
+  variable: '--font-space-grotesk',
 })
 
 export const metadata = {
-  title: 'Comuna Bârnova - Portal Digital Oficial',
-  description: 'Portalul oficial al Comunei Bârnova - servicii publice digitale, noutăți locale și ghid turistic.',
+  metadataBase: new URL('https://barnova.vercel.app'),
+  title: {
+    default: 'Comuna Bârnova',
+    template: '%s · Comuna Bârnova',
+  },
+  description: 'Portalul digital al Comunei Bârnova - servicii publice, transparență și informații locale actualizate.',
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    title: 'Comuna Bârnova',
+    description: 'Portalul digital al Comunei Bârnova - servicii publice, transparență și informații locale actualizate.',
+    url: 'https://barnova.vercel.app',
+    siteName: 'Comuna Bârnova',
+    locale: 'ro_RO',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Comuna Bârnova',
+    description: 'Portalul digital al Comunei Bârnova - servicii publice, transparență și informații locale actualizate.',
   },
 }
 
@@ -30,12 +47,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ro" className={`${inter.variable} ${montserrat.variable} scroll-smooth`} suppressHydrationWarning>
+    <html lang="ro" className={`${inter.variable} ${spaceGrotesk.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="font-sans antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
+          defaultTheme="system"
+          enableSystem
           disableTransitionOnChange
         >
           <div className="noise-overlay" />

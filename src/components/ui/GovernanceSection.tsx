@@ -7,12 +7,21 @@ import { AdministrationData } from '@/lib/administration';
 
 interface GovernanceSectionProps {
   data: AdministrationData;
-  t: any;
+  t: {
+    governance: {
+      title: string;
+      subtitle: string;
+      mayor: string;
+      viceMayor: string;
+      council: string;
+    };
+  };
+  sectionId?: string;
 }
 
-export function GovernanceSection({ data, t }: GovernanceSectionProps) {
+export function GovernanceSection({ data, t, sectionId = 'administration' }: GovernanceSectionProps) {
   return (
-    <section id="admin" className="py-12 relative overflow-hidden">
+    <section id={sectionId} className="py-12 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
           <motion.h2

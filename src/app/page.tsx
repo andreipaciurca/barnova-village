@@ -1,17 +1,15 @@
-import { getNewsFeed, NewsItem } from '@/lib/news';
+import { getNewsFeed } from '@/lib/news';
 import { getAdministrationData } from '@/lib/administration';
 import { getVillageStats } from '@/lib/stats';
-import { getServerService } from '@/lib/supabase/services.server';
-import { translations, Feature } from '@/lib/i18n';
-import { headers } from 'next/headers';
+import { getPublicFeatureSettings } from '@/lib/site-settings';
+import { translations } from '@/lib/i18n';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import * as motion from 'framer-motion/client';
 import { Navbar } from '@/components/ui/Navbar';
 import { GovernanceSection } from '@/components/ui/GovernanceSection';
 import { WeatherWidget } from '@/components/ui/WeatherWidget';
-import Link from 'next/link';
+import { NewsFeed } from '@/components/ui/NewsFeed';
 import Image from 'next/image';
 import { 
   ArrowRight, 
@@ -19,11 +17,9 @@ import {
   Phone, 
   Mail, 
   Clock, 
-  ChevronRight, 
   ExternalLink,
   Zap,
   Shield,
-  Search,
   Users,
   BarChart3,
   TrendingUp,
@@ -31,13 +27,10 @@ import {
   Activity,
   Landmark,
   Building2,
-  Scale,
   Database,
   Gavel,
   ShieldCheck,
   MessageCircle,
-  Camera,
-  X
 } from 'lucide-react';
 
 export default async function Home() {
@@ -45,9 +38,7 @@ export default async function Home() {
   const adminData = await getAdministrationData();
   const villageStats = await getVillageStats();
   
-  const service = await getServerService();
-  const user = await service.getUser();
-  const featureSettings = await service.getSettings('features');
+  const featureSettings = await getPublicFeatureSettings();
   const isSarcastic = featureSettings.sarcastic_mode === true;
 
   const sarcasticTranslations = isSarcastic ? translations.ro.sarcastic : null;
@@ -176,7 +167,7 @@ export default async function Home() {
                   {t.hero.cta_news}
                 </Button>
               </a>
-              <a href="#" className="w-full sm:w-auto">
+              <a href="#services" className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full rounded-full h-16 px-12 text-lg bg-background/50 backdrop-blur-md border-border/50 active:scale-95 transition-all transform-gpu">
                   {t.hero.cta_services} <ArrowRight className="ml-2 h-6 w-6" />
                 </Button>
@@ -189,7 +180,8 @@ export default async function Home() {
         <div className="fixed inset-0 -z-20 opacity-[0.03] pointer-events-none dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
 
         {/* Stats & Infographics Section */}
-        <section id="admin" className="py-16 relative overflow-hidden contain-layout">
+        {featureSettings.show_stats && (
+          <section id="statistics" className="py-16 relative overflow-hidden contain-layout">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-16">
               <motion.div
@@ -403,10 +395,11 @@ export default async function Home() {
               </motion.div>
             </div>
           </div>
-        </section>
+          </section>
+        )}
 
         {/* Features Bento Grid */}
-        <section id="digital" className="py-16 bg-muted/30 relative contain-layout">
+        <section id="services" className="py-16 bg-muted/30 relative contain-layout">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-10">
               <motion.h2 
@@ -459,10 +452,11 @@ export default async function Home() {
         </section>
 
         {/* Administration Section */}
-        <GovernanceSection data={adminData} t={t.features} />
+        <GovernanceSection data={adminData} t={t.features} sectionId="administration" />
 
         {/* News & Social Section */}
-        <section id="news" className="py-16 max-w-7xl mx-auto px-6 lg:px-8 contain-layout">
+        {featureSettings.show_news && (
+          <section id="news" className="py-16 max-w-7xl mx-auto px-6 lg:px-8 contain-layout">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
               <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 gap-6">
@@ -480,52 +474,17 @@ export default async function Home() {
                 </a>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {rssNews.length > 0 ? rssNews.slice(0, 4).map((news, idx) => (
-                  <motion.div
-                    key={news.link}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ delay: idx * 0.1 }}
-                  >
-                    <a href={news.link} target={news.source === 'supabase' ? '_self' : '_blank'} rel={news.source === 'supabase' ? '' : 'noopener noreferrer'} className="block h-full">
-                      <Card className="group h-full flex flex-col border-none shadow-none bg-muted/50 hover:bg-background hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 rounded-[2.5rem] overflow-hidden">
-                        <CardHeader className="flex flex-row items-center justify-between pb-8">
-                          <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
-                            {news.source === 'supabase' ? 'Intern' : t.news.official_tag}
-                          </span>
-                          <time className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                            {new Date(news.pubDate).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })}
-                          </time>
-                        </CardHeader>
-                        <CardContent className="flex-1">
-                          <h3 
-                            className="text-xl font-black mb-6 leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2"
-                            dangerouslySetInnerHTML={{ __html: news.title }}
-                          />
-                          {news.contentSnippet && (
-                            <div 
-                              className="text-muted-foreground leading-relaxed line-clamp-3 font-medium text-sm"
-                              dangerouslySetInnerHTML={{ __html: news.contentSnippet }}
-                            />
-                          )}
-                        </CardContent>
-                        <CardFooter className="pt-8">
-                          <div className="flex items-center gap-2 text-sm font-black text-primary group/btn">
-                            {t.news.read_more}
-                            <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                          </div>
-                        </CardFooter>
-                      </Card>
-                    </a>
-                  </motion.div>
-                )) : (
-                  <div className="col-span-full py-12 text-center text-muted-foreground font-medium">
-                    Nu există anunțuri disponibile momentan.
-                  </div>
-                )}
-              </div>
+              {rssNews.length > 0 ? (
+                <NewsFeed
+                  items={rssNews.slice(0, 4)}
+                  readMoreLabel={t.news.read_more}
+                  officialLabel={t.news.official_tag}
+                />
+              ) : (
+                <div className="py-12 text-center text-muted-foreground font-medium">
+                  Nu există anunțuri disponibile momentan.
+                </div>
+              )}
             </div>
 
             <div className="lg:col-span-4 flex flex-col gap-8">
@@ -582,7 +541,8 @@ export default async function Home() {
               </motion.div>
             </div>
           </div>
-        </section>
+          </section>
+        )}
 
         <section id="archive" className="relative py-24 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">

@@ -1,29 +1,69 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import {
+  ArrowUpRight,
+  Calendar,
+  Filter,
+  Loader2,
+  Pencil,
+  PlusCircle,
+  Search,
+  Trash2,
+  FileText,
+  Sparkles,
+} from 'lucide-react'
 import { getBrowserService } from '@/lib/supabase/services.client'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { 
-  FileText, 
-  PlusCircle,
-  Pencil,
-  Trash2,
-  Calendar,
-  ChevronLeft,
-  Search,
-  Filter,
-  Loader2
-} from 'lucide-react'
-import Link from 'next/link'
+import { AdminShell } from '@/components/admin/AdminShell'
+import { cn } from '@/lib/utils'
+
+type AdminPost = {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string | null
+  status: 'draft' | 'published' | 'archived'
+  created_at: string
+  published_at: string | null
+}
 
 export const dynamic = 'force-dynamic'
 
 export default function AdminPosts() {
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [posts, setPosts] = useState<AdminPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [query, setQuery] = useState('')
   const router = useRouter()
   const service = getBrowserService()
+
+  useEffect(() => {
+    async function loadPosts() {
+      const s = (await service.getAllPosts()) as AdminPost[]
+      setPosts(s)
+      setLoading(false)
+    }
+
+    loadPosts()
+  }, [service])
+
+  const filteredPosts = useMemo(() => {
+    const normalized = query.trim().toLowerCase()
+    if (!normalized) {
+      return posts
+    }
+
+    return posts.filter((post) =>
+      [post.title, post.slug, post.excerpt, post.content]
+        .filter(Boolean)
+        .some((field) => field?.toLowerCase().includes(normalized))
+    )
+  }, [posts, query])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Ești sigur că vrei să ștergi această postare?')) return
@@ -44,143 +84,175 @@ export default function AdminPosts() {
     }
   }
 
-  const [posts, setPosts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadPosts() {
-      const s = await service.getAllPosts()
-      setPosts(s)
-      setLoading(false)
-    }
-    loadPosts()
-  }, [service])
+  const total = posts.length
+  const published = posts.filter((post) => post.status === 'published').length
+  const drafts = posts.filter((post) => post.status === 'draft').length
 
   return (
-    <div className="min-h-screen bg-muted/10 p-6 lg:p-12">
-      <div className="max-w-7xl mx-auto">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div className="flex items-center gap-6">
-            <Link href="/admin/dashboard">
-              <Button variant="outline" size="icon" className="w-12 h-12 rounded-xl border-border/50 bg-background/50">
-                <ChevronLeft className="w-6 h-6" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-4xl font-black tracking-tight mb-2">Postări & Știri</h1>
-              <p className="text-muted-foreground font-semibold">Gestionează tot conținutul publicat pe site.</p>
-            </div>
-          </div>
-          <Link href="/admin/posts/new">
-            <Button className="rounded-2xl font-black gap-2 h-14 px-8 shadow-xl shadow-primary/20">
-              <PlusCircle className="w-5 h-5" />
-              Adaugă Postare
+    <AdminShell
+      section="posts"
+      title="Postări & știri"
+      subtitle="Gestionează articolele din portal, vezi ce e public, ce e draft și deschide instant un preview pentru postările live."
+      actions={
+        <>
+          <Link href="/admin/dashboard">
+            <Button variant="outline" className="h-14 rounded-full border-border/60 bg-background/70 px-6 font-black">
+              Dashboard
             </Button>
           </Link>
-        </header>
+          <Link href="/admin/posts/new">
+            <Button className="h-14 rounded-full px-7 font-black shadow-xl shadow-primary/20">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Adaugă postare
+            </Button>
+          </Link>
+        </>
+      }
+    >
+      <section className="mb-8 grid gap-4 md:grid-cols-3">
+        {[
+          { label: 'Total postări', value: total, icon: FileText, tone: 'from-blue-500 to-cyan-500' },
+          { label: 'Publicate', value: published, icon: Sparkles, tone: 'from-emerald-500 to-teal-500' },
+          { label: 'Drafturi', value: drafts, icon: Pencil, tone: 'from-amber-500 to-orange-500' },
+        ].map((item) => (
+          <Card
+            key={item.label}
+            className="overflow-hidden rounded-[2rem] border border-border/60 bg-background/80 p-5 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{item.label}</div>
+                <div className="mt-3 text-4xl font-black tracking-tight">{item.value}</div>
+              </div>
+              <div className={cn('rounded-2xl bg-gradient-to-br p-3 text-white shadow-lg', item.tone)}>
+                <item.icon className="h-6 w-6" />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </section>
 
-        {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-grow">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input 
-              type="text" 
-              placeholder="Caută postări..." 
-              className="w-full pl-14 pr-6 py-4 rounded-2xl bg-background border-none shadow-sm focus:ring-2 focus:ring-primary/50 font-semibold"
-            />
-          </div>
-          <Button variant="outline" className="rounded-2xl h-14 px-6 gap-2 border-border/50 bg-background">
-            <Filter className="w-5 h-5" />
-            Filtrează
-          </Button>
+      <section className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Caută după titlu, slug sau conținut"
+            className="w-full rounded-full border border-border/60 bg-background/80 py-4 pl-14 pr-5 text-sm font-medium shadow-sm outline-none ring-0 transition-all placeholder:text-muted-foreground/70 focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
+          />
         </div>
+        <Button variant="outline" className="h-14 rounded-full border-border/60 bg-background/70 px-6 font-black">
+          <Filter className="mr-2 h-4 w-4" />
+          Filtrează
+        </Button>
+      </section>
 
-        <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-background">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-muted/30 border-b border-border/50">
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Titlu</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Slug</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Status</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Dată</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Acțiuni</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                {posts && posts.length > 0 ? (
-                  posts.map((post) => (
-                    <tr key={post.id} className="hover:bg-muted/20 transition-colors group">
-                      <td className="px-10 py-6">
-                        <div className="font-bold text-lg group-hover:text-primary transition-colors">{post.title}</div>
-                        <div className="text-xs text-muted-foreground line-clamp-1 max-w-xs">{post.excerpt || 'Fără descriere'}</div>
-                      </td>
-                      <td className="px-10 py-6">
-                        <code className="text-xs bg-muted px-2 py-1 rounded-md text-muted-foreground">/{post.slug}</code>
-                      </td>
-                      <td className="px-10 py-6 text-center">
-                        <span className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest inline-block",
-                          post.status === 'published' ? "bg-emerald-500/10 text-emerald-600" : 
-                          post.status === 'draft' ? "bg-amber-500/10 text-amber-600" : 
-                          "bg-slate-500/10 text-slate-600"
-                        )}>
-                          {post.status === 'published' ? 'Publicat' : 
-                           post.status === 'draft' ? 'Draft' : 'Arhivat'}
-                        </span>
-                      </td>
-                      <td className="px-10 py-6">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-                          <Calendar className="w-4 h-4" />
-                          {new Date(post.created_at).toLocaleDateString('ro-RO')}
-                        </div>
-                      </td>
-                      <td className="px-10 py-6 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link href={`/admin/posts/edit/${post.id}`}>
-                            <Button variant="outline" size="icon" className="w-12 h-12 rounded-xl border-border/50 hover:bg-primary/10 hover:text-primary hover:border-primary/20 transition-all">
-                              <Pencil className="w-5 h-5" />
-                            </Button>
-                          </Link>
-                          <Button 
-                            variant="outline" 
-                            size="icon" 
-                            className="w-12 h-12 rounded-xl border-border/50 text-destructive hover:bg-destructive/10 hover:border-destructive/20 transition-all"
-                            onClick={() => handleDelete(post.id)}
-                            disabled={isDeleting === post.id}
-                          >
-                            {isDeleting === post.id ? (
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-5 h-5" />
-                            )}
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="px-10 py-20 text-center">
-                      <div className="flex flex-col items-center gap-4 text-muted-foreground">
-                        <FileText className="w-12 h-12 opacity-20" />
-                        <p className="font-bold">Nu există postări încă.</p>
-                        <Link href="/admin/posts/new">
-                          <Button variant="outline" className="rounded-xl font-bold">Creează prima postare</Button>
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+      {loading ? (
+        <Card className="rounded-[2rem] border border-border/60 bg-background/80 p-10 text-center shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+          <p className="mt-4 font-semibold text-muted-foreground">Se încarcă postările...</p>
         </Card>
-      </div>
-    </div>
-  )
-}
+      ) : filteredPosts.length === 0 ? (
+        <Card className="rounded-[2rem] border border-border/60 bg-background/80 p-12 text-center shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]">
+          <FileText className="mx-auto h-12 w-12 text-muted-foreground/40" />
+          <h3 className="mt-4 text-2xl font-black">Nu există postări încă</h3>
+          <p className="mx-auto mt-2 max-w-lg text-muted-foreground">
+            Creează prima postare pentru a începe fluxul editorial din portal.
+          </p>
+          <Link href="/admin/posts/new" className="mt-6 inline-flex">
+            <Button className="rounded-full px-6 font-black">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Creează postare
+            </Button>
+          </Link>
+        </Card>
+      ) : (
+        <div className="grid gap-5 xl:grid-cols-2">
+          {filteredPosts.map((post) => (
+            <Card
+              key={post.id}
+              className="group overflow-hidden rounded-[2rem] border border-border/60 bg-background/85 p-6 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_80px_-30px_rgba(15,76,129,0.45)]"
+            >
+              <div className="flex flex-col gap-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="truncate text-2xl font-black tracking-tight group-hover:text-primary transition-colors">
+                        {post.title}
+                      </h3>
+                      <span
+                        className={cn(
+                          'rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]',
+                          post.status === 'published'
+                            ? 'bg-emerald-500/10 text-emerald-600'
+                            : post.status === 'draft'
+                              ? 'bg-amber-500/10 text-amber-600'
+                              : 'bg-slate-500/10 text-slate-600'
+                        )}
+                      >
+                        {post.status === 'published' ? 'Publicat' : post.status === 'draft' ? 'Draft' : 'Arhivat'}
+                      </span>
+                    </div>
+                    <p className="mt-2 line-clamp-3 text-sm leading-7 text-muted-foreground">
+                      {post.excerpt || post.content || 'Fără descriere'}
+                    </p>
+                  </div>
 
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ')
+                  <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                    <ArrowUpRight className="h-5 w-5" />
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-border/60 bg-muted/20 px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Slug</div>
+                    <div className="mt-1 truncate font-mono text-sm">/{post.slug}</div>
+                  </div>
+                  <div className="rounded-2xl border border-border/60 bg-muted/20 px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Dată</div>
+                    <div className="mt-1 flex items-center gap-2 text-sm font-medium text-foreground">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      {new Date(post.created_at).toLocaleDateString('ro-RO')}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <Link href={`/admin/posts/edit/${post.id}`}>
+                    <Button className="rounded-full px-5 font-black shadow-lg shadow-primary/15">
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit
+                    </Button>
+                  </Link>
+                  {post.status === 'published' ? (
+                    <Link href={`/posts/${post.slug}`} target="_blank" rel="noopener noreferrer">
+                      <Button variant="outline" className="rounded-full border-border/60 bg-background/70 px-5 font-black">
+                        Preview
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  ) : null}
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-border/60 px-5 font-black text-destructive hover:bg-destructive/10"
+                    onClick={() => handleDelete(post.id)}
+                    disabled={isDeleting === post.id}
+                  >
+                    {isDeleting === post.id ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="mr-2 h-4 w-4" />
+                    )}
+                    Șterge
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </AdminShell>
+  )
 }

@@ -1,23 +1,21 @@
 import { getServerService } from '@/lib/supabase/services.server'
 import { redirect } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
-import { 
-  Settings, 
-  FileText, 
-  Users as UsersIcon, 
-  LogOut, 
+import Link from 'next/link'
+import type { ComponentType } from 'react'
+import {
+  AlertCircle,
+  ChevronLeft,
+  CheckCircle2,
+  FileText,
   Globe,
   LayoutDashboard,
-  ChevronLeft,
+  Settings,
   Save,
-  CheckCircle2,
-  AlertCircle
 } from 'lucide-react'
-import Link from 'next/link'
-import { translations } from '@/lib/i18n'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { revalidatePath } from 'next/cache'
+import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { AdminShell } from '@/components/admin/AdminShell'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,18 +25,24 @@ export default async function AdminSettingsPage({
   searchParams: Promise<{ success?: string; error?: string }>
 }) {
   const params = await searchParams
-  const t = translations.ro.admin.settings
-  const navT = translations.ro.admin.dashboard.sidebar
-
   const service = await getServerService()
   const user = await service.getUser()
 
   if (!user) {
-    redirect(`/admin/login`)
+    redirect('/admin/login')
   }
 
   const generalSettings = await service.getSettings('general')
   const featureSettings = await service.getSettings('features')
+
+  type FeatureCard = {
+    key: string
+    label: string
+    description: string
+    checked: boolean
+    icon: ComponentType<{ className?: string }>
+    accent?: boolean
+  }
 
   async function updateGeneralAction(formData: FormData) {
     'use server'
@@ -46,18 +50,18 @@ export default async function AdminSettingsPage({
     const site_name = formData.get('site_name') as string
     const site_description = formData.get('site_description') as string
     const contact_email = formData.get('contact_email') as string
-    
+
     const result = await service.updateSettings('general', {
       site_name,
       site_description,
-      contact_email
+      contact_email,
     })
 
     if (!result.error) {
       revalidatePath('/admin/settings')
-      redirect(`/admin/settings?success=true`)
+      redirect('/admin/settings?success=true')
     } else {
-      redirect(`/admin/settings?error=true`)
+      redirect('/admin/settings?error=true')
     }
   }
 
@@ -68,219 +72,202 @@ export default async function AdminSettingsPage({
     const show_stats = formData.get('show_stats') === 'on'
     const show_weather = formData.get('show_weather') === 'on'
     const sarcastic_mode = formData.get('sarcastic_mode') === 'on'
-    
+
     const result = await service.updateSettings('features', {
       show_news,
       show_stats,
       show_weather,
-      sarcastic_mode
+      sarcastic_mode,
     })
 
     if (!result.error) {
       revalidatePath('/admin/settings')
-      redirect(`/admin/settings?success=true`)
+      redirect('/admin/settings?success=true')
     } else {
-      redirect(`/admin/settings?error=true`)
+      redirect('/admin/settings?error=true')
     }
   }
 
+  const featureCards: FeatureCard[] = [
+    {
+      key: 'show_news',
+      label: 'Afișează știri',
+      description: 'Controlează secțiunea de anunțuri de pe homepage.',
+      checked: featureSettings.show_news,
+      icon: FileText,
+    },
+    {
+      key: 'show_stats',
+      label: 'Afișează statistici',
+      description: 'Include modulele de cifre și infografice din pagina principală.',
+      checked: featureSettings.show_stats,
+      icon: LayoutDashboard,
+    },
+    {
+      key: 'show_weather',
+      label: 'Afișează vremea',
+      description: 'Arată widget-ul meteo doar când ai nevoie de el.',
+      checked: featureSettings.show_weather,
+      icon: Globe,
+    },
+    {
+      key: 'sarcastic_mode',
+      label: 'Mod sarcastic',
+      description: 'Activează tonul neoficial al portalului demo.',
+      checked: featureSettings.sarcastic_mode,
+      icon: AlertCircle,
+      accent: true,
+    },
+  ]
+
   return (
-    <div className="min-h-screen bg-muted/10 flex">
-      {/* Sidebar - Same as Dashboard */}
-      <aside className="w-80 bg-background border-r border-border/50 p-8 flex flex-col hidden lg:flex">
-        <div className="flex items-center gap-4 mb-12">
-          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">
-            B
-          </div>
-          <div>
-            <h1 className="text-xl font-black tracking-tighter leading-none">Admin Panel</h1>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Comuna Bârnova</p>
-          </div>
-        </div>
+    <AdminShell
+      section="settings"
+      title="Setări site"
+      subtitle="Gestionează identitatea portalului, funcționalitățile active și comportamentul de afișare al homepage-ului."
+      userEmail={user.email || undefined}
+      actions={
+        <Link href="/admin/dashboard">
+          <Button variant="outline" className="h-14 rounded-full border-border/60 bg-background/70 px-6 font-black">
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Înapoi
+          </Button>
+        </Link>
+      }
+    >
+      <div className="space-y-8">
+        {params.success ? (
+          <Card className="rounded-[2rem] border border-emerald-500/20 bg-emerald-500/10 p-5 text-emerald-700 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-5 w-5" />
+              <p className="font-bold">Setările au fost salvate cu succes.</p>
+            </div>
+          </Card>
+        ) : null}
 
-        <nav className="flex-grow space-y-2">
-          <Link href={`/admin/dashboard`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <LayoutDashboard className="w-5 h-5" />
-            {navT.dashboard}
-          </Link>
-          <Link href={`/admin/posts`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <FileText className="w-5 h-5" />
-            {navT.posts}
-          </Link>
-          <Link href={`/admin/users`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <UsersIcon className="w-5 h-5" />
-            {navT.users}
-          </Link>
-          <Link href={`/admin/settings`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
-            <Settings className="w-5 h-5" />
-            {navT.settings}
-          </Link>
-        </nav>
+        {params.error ? (
+          <Card className="rounded-[2rem] border border-destructive/20 bg-destructive/10 p-5 text-destructive shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5" />
+              <p className="font-bold">A apărut o eroare la salvarea setărilor.</p>
+            </div>
+          </Card>
+        ) : null}
 
-        <div className="pt-8 border-t border-border/50 space-y-6">
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-          </div>
-          <form action="/auth/signout" method="post">
-            <Button variant="outline" className="w-full rounded-2xl font-black gap-2 h-12 text-destructive border-destructive/20 hover:bg-destructive/10">
-              <LogOut className="w-4 h-4" />
-              {navT.logout}
-            </Button>
-          </form>
-        </div>
-      </aside>
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+          <Card className="overflow-hidden rounded-[2.25rem] border border-border/60 bg-background/80 p-6 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)] md:p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                <Globe className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">General settings</p>
+                <h3 className="text-xl font-black tracking-tight">Identitate site</h3>
+              </div>
+            </div>
 
-      {/* Main Content */}
-      <main className="flex-grow p-6 lg:p-12 overflow-y-auto">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <h2 className="text-4xl font-black tracking-tight mb-2">{t.title}</h2>
-            <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
-          </div>
-          <Link href={`/admin/dashboard`}>
-            <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-6 border-border/50 bg-background/50">
-              <ChevronLeft className="w-5 h-5" />
-              {t.back}
-            </Button>
-          </Link>
-        </header>
-
-        {params.success && (
-          <div className="mb-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] flex items-center gap-4 text-emerald-600 animate-in fade-in slide-in-from-top-4 duration-500">
-            <CheckCircle2 className="w-6 h-6" />
-            <p className="font-bold">{t.success}</p>
-          </div>
-        )}
-
-        {params.error && (
-          <div className="mb-8 p-6 bg-destructive/10 border border-destructive/20 rounded-[2rem] flex items-center gap-4 text-destructive animate-in fade-in slide-in-from-top-4 duration-500">
-            <AlertCircle className="w-6 h-6" />
-            <p className="font-bold">{t.error}</p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {/* General Settings */}
-          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background">
-            <h3 className="text-2xl font-black tracking-tight mb-8 flex items-center gap-3">
-              <Globe className="w-6 h-6 text-primary" />
-              {t.general.title}
-            </h3>
             <form action={updateGeneralAction} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">{t.general.site_name}</label>
-                <input 
+                <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                  Nume site
+                </label>
+                <input
                   name="site_name"
-                  type="text" 
+                  type="text"
                   defaultValue={generalSettings.site_name}
-                  className="w-full bg-muted/30 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full rounded-2xl border border-border/60 bg-muted/30 px-6 py-4 font-bold outline-none transition-all focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">{t.general.site_description}</label>
-                <textarea 
+                <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                  Descriere site
+                </label>
+                <textarea
                   name="site_description"
                   defaultValue={generalSettings.site_description}
-                  rows={3}
-                  className="w-full bg-muted/30 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                  rows={4}
+                  className="w-full rounded-[1.75rem] border border-border/60 bg-muted/30 px-6 py-4 font-medium outline-none transition-all focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">{t.general.contact_email}</label>
-                <input 
+                <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                  Email contact
+                </label>
+                <input
                   name="contact_email"
-                  type="email" 
+                  type="email"
                   defaultValue={generalSettings.contact_email}
-                  className="w-full bg-muted/30 border-none rounded-2xl px-6 py-4 font-bold focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full rounded-2xl border border-border/60 bg-muted/30 px-6 py-4 font-bold outline-none transition-all focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full rounded-2xl h-14 font-black gap-2 shadow-xl shadow-primary/10">
-                <Save className="w-5 h-5" />
-                {t.save}
+
+              <Button type="submit" className="h-16 w-full rounded-2xl text-lg font-black shadow-xl shadow-primary/20">
+                <Save className="mr-2 h-5 w-5" />
+                Salvează identitatea
               </Button>
             </form>
           </Card>
 
-          {/* Feature Toggles */}
-          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background">
-            <h3 className="text-2xl font-black tracking-tight mb-8 flex items-center gap-3">
-              <Settings className="w-6 h-6 text-primary" />
-              {t.features.title}
-            </h3>
-            <form action={updateFeaturesAction} className="space-y-8">
-              <div className="space-y-4">
-                <label className="flex items-center justify-between p-6 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                      <FileText className="w-5 h-5" />
-                    </div>
-                    <span className="font-bold">{t.features.show_news}</span>
-                  </div>
-                  <input 
-                    name="show_news"
-                    type="checkbox" 
-                    defaultChecked={featureSettings.show_news}
-                    className="w-6 h-6 rounded-lg text-primary focus:ring-primary border-none bg-muted-foreground/20"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between p-6 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                      <LayoutDashboard className="w-5 h-5" />
-                    </div>
-                    <span className="font-bold">{t.features.show_stats}</span>
-                  </div>
-                  <input 
-                    name="show_stats"
-                    type="checkbox" 
-                    defaultChecked={featureSettings.show_stats}
-                    className="w-6 h-6 rounded-lg text-primary focus:ring-primary border-none bg-muted-foreground/20"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between p-6 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-                      <Globe className="w-5 h-5" />
-                    </div>
-                    <span className="font-bold">{t.features.show_weather}</span>
-                  </div>
-                  <input 
-                    name="show_weather"
-                    type="checkbox" 
-                    defaultChecked={featureSettings.show_weather}
-                    className="w-6 h-6 rounded-lg text-primary focus:ring-primary border-none bg-muted-foreground/20"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between p-6 rounded-2xl bg-orange-500/5 border border-orange-500/10 hover:bg-orange-500/10 transition-all cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                      <AlertCircle className="w-5 h-5" />
-                    </div>
-                    <span className="font-bold text-orange-700">{t.features.sarcastic_mode}</span>
-                  </div>
-                  <input 
-                    name="sarcastic_mode"
-                    type="checkbox" 
-                    defaultChecked={featureSettings.sarcastic_mode}
-                    className="w-6 h-6 rounded-lg text-orange-600 focus:ring-orange-500 border-none bg-orange-500/20"
-                  />
-                </label>
+          <Card className="overflow-hidden rounded-[2.25rem] border border-border/60 bg-background/80 p-6 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)] md:p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                <Settings className="h-5 w-5" />
               </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Feature flags</p>
+                <h3 className="text-xl font-black tracking-tight">Funcționalități active</h3>
+              </div>
+            </div>
 
-              <Button type="submit" className="w-full rounded-2xl h-14 font-black gap-2 shadow-xl shadow-primary/10">
-                <Save className="w-5 h-5" />
-                {t.save}
+            <form action={updateFeaturesAction} className="space-y-4">
+              {featureCards.map((feature) => (
+                <label
+                  key={feature.key}
+                  className="flex cursor-pointer items-center justify-between gap-4 rounded-[1.5rem] border border-border/60 bg-muted/20 p-5 transition-all hover:bg-muted/35"
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={
+                        feature.accent
+                          ? 'flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-600'
+                          : 'flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary'
+                      }
+                    >
+                      <feature.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="font-bold">{feature.label}</div>
+                      <p className="mt-1 text-sm text-muted-foreground">{feature.description}</p>
+                    </div>
+                  </div>
+                  <input
+                    name={feature.key}
+                    type="checkbox"
+                    defaultChecked={feature.checked}
+                    className="h-6 w-6 rounded-lg border-border text-primary focus:ring-primary"
+                  />
+                </label>
+              ))}
+
+              <Button type="submit" className="h-16 w-full rounded-2xl text-lg font-black shadow-xl shadow-primary/20">
+                <Save className="mr-2 h-5 w-5" />
+                Salvează setările
               </Button>
             </form>
+
+            <div className="mt-6 rounded-[1.5rem] border border-border/60 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-5">
+              <div className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Admin note</div>
+              <p className="text-sm leading-7 text-muted-foreground">
+                Schimbările de aici se propagă direct în homepage, inclusiv în secțiunea de anunțuri și în modul
+                vizual al portalului.
+              </p>
+            </div>
           </Card>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   )
 }

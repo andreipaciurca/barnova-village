@@ -3,11 +3,11 @@
 ![Live Demo](https://img.shields.io/badge/demo-online-brightgreen.svg)
 [![barnova.vercel.app](https://img.shields.io/badge/site-barnova.vercel.app-blue.svg)](https://barnova.vercel.app/)
 ![Build Status](https://github.com/andreipaciurca/barnova-village/actions/workflows/ci.yml/badge.svg)
-![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC?logo=tailwind-css)
 ![Supabase](https://img.shields.io/badge/Supabase-Backend-emerald?logo=supabase)
 
-Un portal digital modern, rapid și transparent pentru comunitatea din Bârnova. Acest proiect transformă site-ul tradițional al comunei într-o experiență de înaltă performanță folosind **Next.js 15**, **Supabase** și **Tailwind CSS**.
+Un portal digital modern, rapid și transparent pentru comunitatea din Bârnova. Acest proiect transformă site-ul tradițional al comunei într-o experiență de înaltă performanță folosind **Next.js 16**, **Supabase** și **Tailwind CSS**.
 
 ---
 
@@ -26,19 +26,19 @@ Inspirat de **demoanaf.ro**, punem la dispoziție următoarele endpoint-uri publ
 - **UI/UX Modern**: Design curat, receptiv, optimizat pentru mobil și desktop.
 - **Date Automatizate**: Scraping zilnic pentru informații despre conducerea locală și departamente.
 - **Integritate Electorală**: Sincronizare în timp real cu rezultatele oficiale BEC/AEP.
-- **Admin Dashboard**: Portal securizat (Magic Link) pentru gestionarea știrilor și anunțurilor.
+- **Admin Dashboard**: Portal securizat (Magic Link) pentru gestionarea știrilor și anunțurilor, cu layout unificat și preview live pentru editor.
 - **Transparență Digitală**: Integrare directă cu surse de date deschise precum `data.gov.ro`.
 - **Sănătate Sistem**: Dashboard de diagnoză în timp real la `/health`.
 
 ---
 
 ### 🛠️ Tehnologii Utilizate
-- **Frontend**: Next.js 15 (App Router, Turbopack)
+- **Frontend**: Next.js 16 (App Router, Turbopack)
 - **Styling**: Tailwind CSS & Lucide Icons
 - **Backend**: Supabase (PostgreSQL, Auth, Edge Functions)
 - **Deployment**: Vercel (Hobby Tier)
 - **Automatizare**: GitHub Actions (Daily Sync)
-- **Testing**: Vitest & Playwright
+- **Testing**: Vitest, Testing Library & Playwright
 
 ---
 
@@ -52,6 +52,11 @@ Menținem o disponibilitate ridicată printr-un dashboard public:
 ### 📖 Documentație Detaliată
 Pentru instrucțiuni de instalare și configurare, consultați:
 - [**Documentație în Română**](README.ro.md)
+
+### 📰 Reader & Editor Flow
+- Postările publicate se deschid la `/posts/[slug]`.
+- Anunțurile interne se pot citi direct într-un reader modal pe homepage.
+- Editorul de postări include preview live înainte de publicare.
 
 ---
 

@@ -5,15 +5,14 @@ export async function POST(request: Request) {
   try {
     const service = await getServerService();
     const user = await service.getUser();
-    
-    // Deși vrem să fie accesibil ca un demo, modificarea setărilor ar trebui 
-    // să fie limitată sau măcar să avem o logică de fallback.
-    // Pentru acest demo, permitem modificarea dacă suntem în mediu de dezvoltare
-    // sau dacă avem un user autentificat.
-    
+
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { key, value } = await request.json();
-    
-    if (key !== 'sarcastic_mode') {
+
+    if (key !== 'sarcastic_mode' || typeof value !== 'boolean') {
       return NextResponse.json({ error: 'Invalid setting key' }, { status: 400 });
     }
 

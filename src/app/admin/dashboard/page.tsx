@@ -1,34 +1,45 @@
 import { getServerService } from '@/lib/supabase/services.server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import {
+  Activity,
+  ArrowUpRight,
+  Database,
+  FileText,
+  Globe,
+  LayoutDashboard,
+  LogOut,
+  Pencil,
+  PlusCircle,
+  Settings,
+  Shield,
+  Sparkles,
+  Users as UsersIcon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { 
-  Plus, 
-  Settings, 
-  FileText, 
-  Users as UsersIcon, 
-  LogOut, 
-  BarChart, 
-  Globe,
-  PlusCircle,
-  Pencil,
-  Trash2,
-  Calendar,
-  LayoutDashboard,
-  Activity,
-  Zap,
-  ExternalLink,
-  Menu,
-  X
-} from 'lucide-react'
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { translations } from '@/lib/i18n'
 import { DynamicGreeting } from '@/components/ui/DynamicGreeting'
 import { HealthMetrics } from '@/components/ui/HealthMetrics'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { cn } from '@/lib/utils'
+import { translations } from '@/lib/i18n'
 
 export const dynamic = 'force-dynamic'
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString('ro-RO', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+function getTimeLabel() {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return 'morning'
+  if (hour >= 12 && hour < 18) return 'day'
+  return 'evening'
+}
 
 export default async function AdminDashboard() {
   const t = translations.ro.admin.dashboard
@@ -38,231 +49,315 @@ export default async function AdminDashboard() {
   const user = await service.getUser()
 
   if (!user) {
-    redirect(`/admin/login`)
+    redirect('/admin/login')
   }
 
   const posts = await service.getAllPosts()
-  
+
+  const publishedCount = posts.filter((post) => post.status === 'published').length
+  const draftCount = posts.filter((post) => post.status === 'draft').length
+  const archivedCount = posts.filter((post) => post.status === 'archived').length
+  const recentPosts = posts.slice(0, 5)
+  const timeLabel = getTimeLabel()
+
+  const quickStats = [
+    {
+      label: t.stats.active_posts,
+      value: posts.length,
+      hint: `${publishedCount} publicate`,
+      icon: FileText,
+      accent: 'from-blue-500 to-cyan-500',
+    },
+    {
+      label: 'Drafturi',
+      value: draftCount,
+      hint: 'În lucru',
+      icon: Pencil,
+      accent: 'from-amber-500 to-orange-500',
+    },
+    {
+      label: 'Arhivate',
+      value: archivedCount,
+      hint: 'Istoric',
+      icon: Shield,
+      accent: 'from-slate-500 to-slate-700',
+    },
+  ]
+
+  const navigation = [
+    { href: '/admin/dashboard', label: navT.dashboard, icon: LayoutDashboard, active: true },
+    { href: '/admin/posts', label: navT.posts, icon: FileText },
+    { href: '/admin/users', label: navT.users, icon: UsersIcon },
+    { href: '/admin/settings', label: navT.settings, icon: Settings },
+  ]
+
   return (
-    <div className="min-h-screen bg-muted/10 flex flex-col lg:flex-row">
-      {/* Sidebar */}
-      <aside className="w-80 bg-background border-r border-border/50 p-8 flex flex-col hidden lg:flex h-screen sticky top-0">
-        <div className="flex items-center gap-4 mb-12">
-          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">
-            B
-          </div>
-          <div>
-            <h1 className="text-xl font-black tracking-tighter leading-none">Admin Panel</h1>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">Comuna Bârnova</p>
-          </div>
-        </div>
-
-        <nav className="flex-grow space-y-2">
-          <Link href={`/admin/dashboard`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
-            <LayoutDashboard className="w-5 h-5" />
-            {navT.dashboard}
-          </Link>
-          <Link href={`/admin/posts`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <FileText className="w-5 h-5" />
-            {navT.posts}
-          </Link>
-          <Link href={`/admin/users`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <UsersIcon className="w-5 h-5" />
-            {navT.users}
-          </Link>
-          <Link href={`/admin/settings`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
-            <Settings className="w-5 h-5" />
-            {navT.settings}
-          </Link>
-        </nav>
-
-        <div className="pt-8 border-t border-border/50 space-y-6">
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-          </div>
-
-          <div className="flex items-center gap-4 px-4 py-4 bg-muted/30 rounded-2xl">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-              <UsersIcon className="w-5 h-5" />
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-sm font-black truncate">{user.email}</p>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{navT.admin_tag}</p>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(15,76,129,0.12),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(212,160,23,0.10),transparent_24%)] text-foreground">
+      <div className="mx-auto flex min-h-screen max-w-[1600px]">
+        <aside className="sticky top-0 hidden h-screen w-[18rem] shrink-0 border-r border-border/60 bg-background/70 p-6 backdrop-blur-xl lg:flex lg:flex-col">
+          <div className="mb-8 rounded-[1.75rem] border border-border/60 bg-card/80 p-5 shadow-[0_24px_80px_-50px_rgba(15,76,129,0.45)]">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-lg font-black text-primary-foreground shadow-lg shadow-primary/20">
+                B
+              </div>
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-muted-foreground">Admin Studio</p>
+                <h1 className="text-xl font-black tracking-tight">Bârnova Village</h1>
+              </div>
             </div>
           </div>
-          
-          <form action="/auth/signout" method="post">
-            <Button variant="outline" className="w-full rounded-2xl font-black gap-2 h-12 text-destructive border-destructive/20 hover:bg-destructive/10">
-              <LogOut className="w-4 h-4" />
-              {navT.logout}
-            </Button>
-          </form>
-        </div>
-      </aside>
 
-      {/* Mobile Header */}
-      <header className="lg:hidden bg-background border-b border-border/50 p-6 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white text-xl font-black">B</div>
-          <span className="font-black tracking-tighter">Admin</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-grow p-6 lg:p-12 overflow-y-auto">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <DynamicGreeting />
-            <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href={`/`}>
-              <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-6 border-border/50 bg-background/50">
-                <Globe className="w-5 h-5" />
-                {t.view_site}
-              </Button>
-            </Link>
-            <Link href={`/admin/posts/new`}>
-              <Button className="rounded-2xl font-black gap-2 h-14 px-8 shadow-xl shadow-primary/20">
-                <PlusCircle className="w-5 h-5" />
-                {t.new_post}
-              </Button>
-            </Link>
-          </div>
-        </header>
-
-        {/* Health Stats */}
-        <HealthMetrics />
-
-        {/* Logs & Monitoring Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background overflow-hidden relative">
-             <div className="absolute top-0 right-0 p-10 opacity-5">
-              <Zap className="w-32 h-32" />
-            </div>
-            <h3 className="text-2xl font-black tracking-tight mb-8">Monitorizare & Log-uri</h3>
-            <div className="space-y-4">
-              <a 
-                href="https://vercel.com/dashboard" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-6 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all group"
+          <nav className="space-y-2">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all',
+                  item.active
+                    ? 'bg-primary/10 text-primary shadow-sm'
+                    : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                )}
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white">
-                    <Zap className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="font-black text-sm">Vercel Logs</p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Serverless Functions & Deployment</p>
-                  </div>
-                </div>
-                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-              </a>
-
-              <a 
-                href="https://supabase.com/dashboard" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-6 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white">
-                    <Activity className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="font-black text-sm">Supabase Logs</p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Database & Auth Activity</p>
-                  </div>
-                </div>
-                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-              </a>
-            </div>
-          </Card>
-
-          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background flex flex-col justify-center text-center">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary mx-auto mb-6">
-              <Activity className="w-10 h-10 animate-pulse" />
-            </div>
-            <h3 className="text-2xl font-black tracking-tight mb-2">Endpoint Sănătate</h3>
-            <p className="text-muted-foreground font-semibold mb-8 max-w-sm mx-auto">
-              Sistemul verifică automat conexiunea cu baza de date și statusul serverului.
-            </p>
-            <Link href="/api/health" target="_blank">
-              <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-8 border-border/50">
-                Vezi Status JSON
-                <ExternalLink className="w-4 h-4" />
-              </Button>
-            </Link>
-          </Card>
-        </div>
-
-        {/* Recent Activity / Content Table */}
-        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-          <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-background">
-            <div className="p-10 border-b border-border/50 flex items-center justify-between">
-              <h3 className="text-2xl font-black tracking-tight">{t.recent_posts.title}</h3>
-              <Link href={`/admin/posts`} className="text-xs font-black uppercase tracking-widest text-primary hover:underline">
-                {t.recent_posts.view_all}
+                <item.icon className="h-5 w-5" />
+                {item.label}
               </Link>
+            ))}
+          </nav>
+
+          <div className="mt-auto space-y-4 pt-6">
+            <div className="rounded-[1.5rem] border border-border/60 bg-muted/30 p-4">
+              <div className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                Conectat ca
+              </div>
+              <p className="truncate text-sm font-bold">{user.email}</p>
+              <p className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                {navT.admin_tag}
+              </p>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-muted/30">
-                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Titlu</th>
-                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
-                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Dată</th>
-                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">Acțiuni</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/50">
-                  {posts.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-10 py-12 text-center text-muted-foreground font-bold italic">
-                        {t.recent_posts.empty}
-                      </td>
-                    </tr>
-                  ) : (
-                    posts.slice(0, 5).map((post, idx) => (
-                      <tr key={idx} className="hover:bg-muted/20 transition-colors">
-                        <td className="px-10 py-6 font-bold">{post.title}</td>
-                        <td className="px-10 py-6">
-                            <span className={cn(
-                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
-                            post.status === "published" ? "bg-emerald-500/10 text-emerald-600" : 
-                            post.status === "archived" ? "bg-slate-500/10 text-slate-600" :
-                            "bg-amber-500/10 text-amber-600"
-                          )}>
-                            {post.status === 'published' ? 'Publicat' : 
-                             post.status === 'archived' ? 'Arhivat' : 'Draft'}
+
+            <div className="flex items-center justify-between">
+              <ThemeToggle />
+              <form action="/auth/signout" method="post">
+                <Button
+                  variant="outline"
+                  className="rounded-full border-border/60 bg-background/70 px-4 text-destructive hover:bg-destructive/10"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {navT.logout}
+                </Button>
+              </form>
+            </div>
+          </div>
+        </aside>
+
+        <main className="flex-1 px-5 py-6 lg:px-8 lg:py-8">
+          <header className="mb-8 overflow-hidden rounded-[2rem] border border-border/60 bg-background/75 p-6 shadow-[0_24px_80px_-55px_rgba(15,76,129,0.45)] backdrop-blur-xl md:p-8">
+            <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+              <div className="max-w-3xl">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-primary">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {timeLabel === 'morning' ? 'Warm start' : timeLabel === 'day' ? 'Working session' : 'Evening review'}
+                </div>
+                <DynamicGreeting />
+                <p className="max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
+                  {t.subtitle}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link href="/">
+                  <Button
+                    variant="outline"
+                    className="h-14 rounded-full border-border/60 bg-background/70 px-6 font-black"
+                  >
+                    <Globe className="mr-2 h-4 w-4" />
+                    {t.view_site}
+                  </Button>
+                </Link>
+                <Link href="/admin/posts/new">
+                  <Button className="h-14 rounded-full px-7 font-black shadow-xl shadow-primary/20">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    {t.new_post}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </header>
+
+          <section className="mb-8 grid gap-4 md:grid-cols-3">
+            {quickStats.map((item) => (
+              <Card
+                key={item.label}
+                className="overflow-hidden rounded-[2rem] border border-border/60 bg-background/80 p-5 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                      {item.label}
+                    </div>
+                    <div className="mt-3 text-4xl font-black tracking-tight">{item.value}</div>
+                    <p className="mt-2 text-sm font-medium text-muted-foreground">{item.hint}</p>
+                  </div>
+                  <div className={cn('rounded-2xl p-3 text-white shadow-lg', `bg-gradient-to-br ${item.accent}`)}>
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </section>
+
+          <section className="mb-8">
+            <HealthMetrics />
+          </section>
+
+          <section className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+            <Card className="overflow-hidden rounded-[2.25rem] border border-border/60 bg-background/80 shadow-[0_24px_80px_-50px_rgba(15,76,129,0.45)]">
+              <div className="flex items-center justify-between border-b border-border/50 px-6 py-5 md:px-8">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                    Content Stream
+                  </p>
+                  <h2 className="mt-2 text-2xl font-black tracking-tight">{t.recent_posts.title}</h2>
+                </div>
+                <Link href="/admin/posts" className="inline-flex">
+                  <Button variant="outline" className="rounded-full border-border/60 bg-background/70 px-5 font-black">
+                    {t.recent_posts.view_all}
+                    <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="divide-y divide-border/50">
+                {recentPosts.length === 0 ? (
+                  <div className="px-6 py-16 text-center text-muted-foreground">
+                    {t.recent_posts.empty}
+                  </div>
+                ) : (
+                  recentPosts.map((post) => (
+                    <div key={post.id} className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between md:px-8">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="truncate text-lg font-black tracking-tight">{post.title}</h3>
+                          <span
+                            className={cn(
+                              'rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]',
+                              post.status === 'published'
+                                ? 'bg-emerald-500/10 text-emerald-600'
+                                : post.status === 'draft'
+                                  ? 'bg-amber-500/10 text-amber-600'
+                                  : 'bg-slate-500/10 text-slate-600'
+                            )}
+                          >
+                            {post.status === 'published' ? 'Publicat' : post.status === 'draft' ? 'Draft' : 'Arhivat'}
                           </span>
-                        </td>
-                        <td className="px-10 py-6 text-sm text-muted-foreground font-medium">
-                          {new Date(post.created_at).toLocaleDateString('ro-RO')}
-                        </td>
-                        <td className="px-10 py-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Link href={`/admin/posts/${post.id}`}>
-                              <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-border/50">
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                        </div>
+                        <p className="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                          {post.excerpt || 'Fără descriere'}
+                        </p>
+                        <p className="mt-2 text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
+                          {formatDate(post.created_at)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {post.status === 'published' && post.slug ? (
+                          <Link href={`/posts/${post.slug}`} target="_blank" rel="noopener noreferrer">
+                            <Button
+                              variant="outline"
+                              className="h-11 rounded-full border-border/60 bg-background/70 px-5 font-black"
+                            >
+                              Preview
+                            </Button>
+                          </Link>
+                        ) : null}
+                        <Link href={`/admin/posts/edit/${post.id}`}>
+                          <Button className="h-11 rounded-full px-5 font-black shadow-lg shadow-primary/15">
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+
+            <div className="space-y-8">
+              <Card className="overflow-hidden rounded-[2.25rem] border border-border/60 bg-background/80 p-6 shadow-[0_24px_80px_-50px_rgba(15,76,129,0.45)]">
+                <div className="mb-5 flex items-center gap-3">
+                  <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                    <Activity className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                      Monitoring
+                    </p>
+                    <h2 className="text-xl font-black tracking-tight">Logs & live status</h2>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <a
+                    href="https://vercel.com/dashboard"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between rounded-2xl border border-border/50 bg-muted/25 px-4 py-4 transition-all hover:-translate-y-0.5 hover:bg-muted/45"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-2xl bg-slate-950 p-3 text-white">
+                        <Database className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-black">Vercel Logs</p>
+                        <p className="text-xs text-muted-foreground">Deploys, functions, edge runtime</p>
+                      </div>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </a>
+
+                  <a
+                    href="https://supabase.com/dashboard"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between rounded-2xl border border-border/50 bg-muted/25 px-4 py-4 transition-all hover:-translate-y-0.5 hover:bg-muted/45"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-2xl bg-emerald-500 p-3 text-white">
+                        <Shield className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-black">Supabase Logs</p>
+                        <p className="text-xs text-muted-foreground">Database, auth, RLS activity</p>
+                      </div>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </a>
+                </div>
+              </Card>
+
+              <Card className="overflow-hidden rounded-[2.25rem] border border-border/60 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-6 shadow-[0_24px_80px_-50px_rgba(15,76,129,0.45)]">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                  Live action
+                </p>
+                <h2 className="mt-3 text-2xl font-black tracking-tight">Endpoint sănătate</h2>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  Verifică rapid statusul infrastructurii și deschide vizualizarea JSON într-un tab separat.
+                </p>
+                <div className="mt-6">
+                  <Link href="/api/health" target="_blank">
+                    <Button className="h-12 rounded-full px-6 font-black shadow-xl shadow-primary/15">
+                      Vezi Status JSON
+                      <ArrowUpRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
             </div>
-          </Card>
-        </div>
-      </main>
+          </section>
+        </main>
+      </div>
     </div>
   )
 }
-

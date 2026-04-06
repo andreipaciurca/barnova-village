@@ -1,44 +1,54 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useEffect, use, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { AlertCircle, ChevronLeft, Loader2, Save } from 'lucide-react'
 import { getBrowserService } from '@/lib/supabase/services.client'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { ChevronLeft, Save, Loader2, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
+import { AdminShell } from '@/components/admin/AdminShell'
+import { PostEditorPreview } from '@/components/admin/PostEditorPreview'
+import { slugify } from '@/lib/content'
+
+type PostStatus = 'draft' | 'published' | 'archived'
+
+type PostRecord = {
+  id: string
+  title: string
+  slug: string
+  content: string | null
+  excerpt: string | null
+  status: PostStatus
+  author_id: string
+  published_at: string | null
+}
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const id = resolvedParams.id
-  
+
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
   const [excerpt, setExcerpt] = useState('')
-  const [status, setStatus] = useState('draft')
+  const [status, setStatus] = useState<PostStatus>('draft')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [post, setPost] = useState<PostRecord | null>(null)
   const router = useRouter()
   const service = getBrowserService()
 
-  const [post, setPost] = useState<any>(null)
-
   useEffect(() => {
     async function fetchPost() {
-      if (!id) {
-        console.warn('ID-ul postării lipsește din parametri.')
-        return
-      }
-      
-      console.log('Preluare postare cu ID:', id)
+      if (!id) return
+
       try {
-        const data = await service.getPostById(id)
-        console.log('Date postare primite:', data)
+        const data = (await service.getPostById(id)) as PostRecord | null
 
         if (!data) {
-          setError('Postarea nu a fost găsită în baza de date. (ID: ' + id + ')')
+          setError(`Postarea nu a fost găsită în baza de date. (ID: ${id})`)
         } else {
           setPost(data)
           setTitle(data.title || '')
@@ -58,22 +68,6 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     fetchPost()
   }, [id, service])
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    setTitle(val)
-    if (!slug || slug === generateSlug(title)) {
-      setSlug(generateSlug(val))
-    }
-  }
-
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w ]+/g, '')
-      .replace(/ +/g, '-')
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -85,33 +79,26 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       return
     }
 
-    // Prepare data
     const now = new Date().toISOString()
-    const updateData: any = {
-      id: id,
+    const updateData = {
+      id,
       title,
-      slug,
+      slug: slug || slugify(title),
       content,
       excerpt,
       status,
       updated_at: now,
-      author_id: post?.author_id || user.id, // Ensure author_id is preserved or set
+      author_id: post?.author_id || user.id,
+      published_at:
+        status === 'published'
+          ? post?.published_at || now
+          : null,
     }
 
-    // Set published_at if moving to published and it wasn't already set
-    if (status === 'published' && !post.published_at) {
-      updateData.published_at = now
-    } else if (status === 'published' && post.published_at) {
-      updateData.published_at = post.published_at
-    } else if (status !== 'published') {
-      updateData.published_at = null
-    }
+    const { error: saveError } = await service.upsertPost(updateData)
 
-    const { error } = await service.upsertPost(updateData)
-
-    if (error) {
-      console.error('Eroare la salvare:', error)
-      alert('Eroare la salvare: ' + error.message)
+    if (saveError) {
+      alert('Eroare la salvare: ' + saveError.message)
       setLoading(false)
     } else {
       router.push('/admin/posts')
@@ -123,7 +110,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/10">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
           <p className="font-bold text-muted-foreground">Se încarcă postarea...</p>
         </div>
       </div>
@@ -132,121 +119,141 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/10 p-6">
-        <Card className="max-w-md w-full p-10 text-center rounded-[3rem] shadow-2xl border-none">
-          <div className="w-20 h-20 bg-destructive/10 text-destructive rounded-full flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-10 h-10" />
-          </div>
-          <h2 className="text-2xl font-black mb-4">Eroare de acces</h2>
-          <p className="text-muted-foreground font-semibold mb-8">{error}</p>
+      <AdminShell
+        section="posts"
+        title="Eroare de acces"
+        subtitle="Nu am putut încărca articolul pentru editare."
+        actions={
           <Link href="/admin/posts">
-            <Button className="w-full rounded-2xl h-14 font-black">Înapoi la Postări</Button>
+            <Button variant="outline" className="h-14 rounded-full border-border/60 bg-background/70 px-6 font-black">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Înapoi
+            </Button>
           </Link>
+        }
+      >
+        <Card className="mx-auto max-w-xl rounded-[2rem] border border-border/60 bg-background/80 p-8 text-center shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)]">
+          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <AlertCircle className="h-10 w-10" />
+          </div>
+          <h3 className="text-2xl font-black tracking-tight">Articol indisponibil</h3>
+          <p className="mt-3 text-muted-foreground">{error}</p>
         </Card>
-      </div>
+      </AdminShell>
     )
   }
 
   return (
-    <div className="min-h-screen bg-muted/10 p-6 lg:p-12">
-      <div className="max-w-5xl mx-auto">
-        <header className="flex items-center justify-between gap-6 mb-12">
-          <div className="flex items-center gap-6">
-            <Link href="/admin/posts">
-              <Button variant="outline" size="icon" className="w-12 h-12 rounded-xl border-border/50 bg-background/50">
-                <ChevronLeft className="w-6 h-6" />
-              </Button>
-            </Link>
-            <h1 className="text-4xl font-black tracking-tight">Editează Postarea</h1>
-          </div>
-        </header>
+    <AdminShell
+      section="posts"
+      title="Editează postarea"
+      subtitle="Actualizează textul, statusul și metadatele articolului, cu o previzualizare live a rezultatului final."
+      actions={
+        <Link href="/admin/posts">
+          <Button variant="outline" className="h-14 rounded-full border-border/60 bg-background/70 px-6 font-black">
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Înapoi
+          </Button>
+        </Link>
+      }
+    >
+      <form onSubmit={handleSubmit} className="grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <div className="space-y-8">
+          <Card className="space-y-6 rounded-[2.25rem] border border-border/60 bg-background/80 p-6 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)] md:p-8">
+            <div className="space-y-2">
+              <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">Titlu</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-2xl border border-border/60 bg-muted/30 px-6 py-4 text-xl font-bold outline-none transition-all placeholder:text-muted-foreground/70 focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
+                placeholder="Titlul postării..."
+                required
+              />
+            </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <Card className="p-8 rounded-[2.5rem] border-none shadow-2xl shadow-primary/5 bg-background space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Titlu</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-6 py-4 rounded-2xl bg-muted/50 border-none focus:ring-2 focus:ring-primary/50 transition-all font-bold text-xl"
-                  placeholder="Titlul postării..."
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">Slug</label>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                className="w-full rounded-2xl border border-border/60 bg-muted/30 px-6 py-4 font-mono text-sm outline-none transition-all placeholder:text-muted-foreground/70 focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
+                placeholder="slug-postare"
+                required
+              />
+              <p className="ml-1 text-xs text-muted-foreground">
+                URL final: <span className="font-mono text-foreground">/posts/{slug || 'slug-postare'}</span>
+              </p>
+            </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Slug (URL)</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground font-mono text-sm">/</span>
-                  <input
-                    type="text"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl bg-muted/50 border-none focus:ring-2 focus:ring-primary/50 transition-all font-mono text-sm"
-                    placeholder="slug-postare"
-                    required
-                  />
-                </div>
-              </div>
+            <div className="space-y-2">
+              <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                Conținut
+              </label>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="min-h-[420px] w-full rounded-[1.75rem] border border-border/60 bg-muted/30 px-6 py-4 text-sm leading-7 outline-none transition-all placeholder:text-muted-foreground/70 focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
+                placeholder="Scrie aici conținutul postării..."
+                required
+              />
+            </div>
+          </Card>
+        </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Conținut (Markdown/HTML)</label>
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-6 py-4 rounded-2xl bg-muted/50 border-none focus:ring-2 focus:ring-primary/50 transition-all font-medium min-h-[400px] resize-none"
-                  placeholder="Scrie aici conținutul postării..."
-                  required
-                />
-              </div>
-            </Card>
-          </div>
-
-          <div className="space-y-8">
-            <Card className="p-8 rounded-[2.5rem] border-none shadow-2xl shadow-primary/5 bg-background space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Status</label>
-                <select 
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-6 py-4 rounded-2xl bg-muted/50 border-none focus:ring-2 focus:ring-primary/50 transition-all font-bold appearance-none"
-                >
-                  <option value="draft">Draft (Privat)</option>
-                  <option value="published">Publicat (Live)</option>
-                  <option value="archived">Arhivat</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Rezumat (Excerpt)</label>
-                <textarea
-                  value={excerpt}
-                  onChange={(e) => setExcerpt(e.target.value)}
-                  className="w-full px-6 py-4 rounded-2xl bg-muted/50 border-none focus:ring-2 focus:ring-primary/50 transition-all font-medium h-32 resize-none text-sm"
-                  placeholder="Un scurt rezumat pentru card-ul de pe prima pagină..."
-                />
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full h-16 rounded-2xl font-black text-lg gap-3 shadow-xl shadow-primary/20"
-                disabled={loading}
+        <div className="space-y-8">
+          <Card className="space-y-6 rounded-[2.25rem] border border-border/60 bg-background/80 p-6 shadow-[0_18px_60px_-40px_rgba(15,76,129,0.45)] md:p-8">
+            <div className="space-y-2">
+              <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as PostStatus)}
+                className="w-full rounded-2xl border border-border/60 bg-muted/30 px-6 py-4 font-bold outline-none transition-all focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
               >
-                {loading ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  <>
-                    Actualizează
-                    <Save className="w-6 h-6" />
-                  </>
-                )}
-              </Button>
-            </Card>
-          </div>
-        </form>
-      </div>
-    </div>
+                <option value="draft">Draft</option>
+                <option value="published">Publicat</option>
+                <option value="archived">Arhivat</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="ml-1 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                Rezumat
+              </label>
+              <textarea
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                className="h-32 w-full rounded-[1.5rem] border border-border/60 bg-muted/30 px-6 py-4 text-sm outline-none transition-all placeholder:text-muted-foreground/70 focus:border-primary/30 focus:shadow-[0_0_0_4px_rgba(15,76,129,0.08)]"
+                placeholder="Un scurt rezumat pentru cardul de pe prima pagină..."
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="h-16 w-full rounded-2xl text-lg font-black shadow-xl shadow-primary/20"
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="h-6 w-6 animate-spin" />
+              ) : (
+                <>
+                  Actualizează
+                  <Save className="ml-2 h-5 w-5" />
+                </>
+              )}
+            </Button>
+          </Card>
+
+          <PostEditorPreview
+            title={title}
+            slug={slug || slugify(title)}
+            content={content}
+            excerpt={excerpt}
+            status={status}
+          />
+        </div>
+      </form>
+    </AdminShell>
   )
 }

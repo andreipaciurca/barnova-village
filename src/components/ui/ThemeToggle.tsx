@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/Button';
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
   // Avoid hydration mismatch
@@ -27,9 +27,9 @@ export function ThemeToggle() {
       variant="outline"
       size="icon"
       className="rounded-xl w-10 h-10 bg-background/50 border-border/50 hover:bg-background transition-all"
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
     >
-      {theme === 'dark' ? (
+      {resolvedTheme === 'dark' ? (
         <Sun className="h-5 w-5 text-amber-500 transition-all" />
       ) : (
         <Moon className="h-5 w-5 text-blue-500 transition-all" />

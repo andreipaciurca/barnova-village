@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    concurrency:
+      group: daily-sync-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,7 +36,9 @@ jobs:
       - name: Check for changes
         id: git-check
         run: |
-          git diff --quiet public/data/leadership.json || echo "changed=true" >> $GITHUB_OUTPUT
+          if ! git diff --quiet -- public/data/leadership.json; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Commit and Push changes
         if: steps.git-check.outputs.changed == 'true'

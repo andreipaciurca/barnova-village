@@ -26,8 +26,7 @@ import {
   AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
-import { translations, Language } from '@/lib/i18n'
-import { AdminLanguageToggle } from '@/components/ui/AdminLanguageToggle'
+import { translations } from '@/lib/i18n'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { revalidatePath } from 'next/cache'
 
@@ -36,18 +35,17 @@ export const dynamic = 'force-dynamic'
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ lang?: string; success?: string; error?: string }>
+  searchParams: Promise<{ success?: string; error?: string }>
 }) {
   const params = await searchParams
-  const lang = (params.lang === 'en' ? 'en' : 'ro') as Language
-  const t = translations[lang].admin.users
-  const navT = translations[lang].admin.dashboard.sidebar
+  const t = translations.ro.admin.users
+  const navT = translations.ro.admin.dashboard.sidebar
 
   const service = await getServerService()
   const user = await service.getUser()
 
   if (!user) {
-    redirect(`/admin/login?lang=${lang}`)
+    redirect(`/admin/login`)
   }
 
   async function updateProfileAction(formData: FormData) {
@@ -62,9 +60,9 @@ export default async function AdminUsersPage({
 
     if (!error) {
       revalidatePath('/admin/users')
-      redirect(`/admin/users?lang=${lang}&success=true`)
+      redirect(`/admin/users?success=true`)
     } else {
-      redirect(`/admin/users?lang=${lang}&error=true`)
+      redirect(`/admin/users?error=true`)
     }
   }
 
@@ -83,19 +81,19 @@ export default async function AdminUsersPage({
         </div>
 
         <nav className="flex-grow space-y-2">
-          <Link href={`/admin/dashboard?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/dashboard`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <LayoutDashboard className="w-5 h-5" />
             {navT.dashboard}
           </Link>
-          <Link href={`/admin/posts?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/posts`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <FileText className="w-5 h-5" />
             {navT.posts}
           </Link>
-          <Link href={`/admin/users?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
+          <Link href={`/admin/users`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
             <UsersIcon className="w-5 h-5" />
             {navT.users}
           </Link>
-          <Link href={`/admin/settings?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/settings`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <Settings className="w-5 h-5" />
             {navT.settings}
           </Link>
@@ -103,7 +101,6 @@ export default async function AdminUsersPage({
 
         <div className="pt-8 border-t border-border/50 space-y-6">
           <div className="flex items-center gap-4">
-            <AdminLanguageToggle currentLang={lang} />
             <ThemeToggle />
           </div>
           
@@ -133,7 +130,7 @@ export default async function AdminUsersPage({
             <h2 className="text-4xl font-black tracking-tight mb-2">{t.title}</h2>
             <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
           </div>
-          <Link href={`/admin/dashboard?lang=${lang}`}>
+          <Link href={`/admin/dashboard`}>
             <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-6 border-border/50 bg-background/50">
               <ChevronLeft className="w-5 h-5" />
               {t.back}
@@ -144,7 +141,7 @@ export default async function AdminUsersPage({
         {params.success && (
           <div className="mb-8 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] flex items-center gap-4 text-emerald-600 animate-in fade-in slide-in-from-top-4 duration-500">
             <CheckCircle2 className="w-6 h-6" />
-            <p className="font-bold">{lang === 'ro' ? 'Profil actualizat cu succes!' : 'Profile updated successfully!'}</p>
+            <p className="font-bold">Profil actualizat cu succes!</p>
           </div>
         )}
 
@@ -177,7 +174,7 @@ export default async function AdminUsersPage({
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.last_login}</p>
                   <p className="font-bold text-sm">
-                    {new Date(user.last_sign_in_at || '').toLocaleString(lang === 'ro' ? 'ro-RO' : 'en-US')}
+                    {new Date(user.last_sign_in_at || '').toLocaleString('ro-RO')}
                   </p>
                 </div>
               </div>
@@ -186,11 +183,11 @@ export default async function AdminUsersPage({
 
           {/* Edit Profile Form */}
           <Card className="xl:col-span-2 rounded-[3rem] border-none shadow-2xl shadow-primary/5 p-10 bg-background">
-            <h3 className="text-2xl font-black tracking-tight mb-8">{lang === 'ro' ? 'Editează Profil' : 'Edit Profile'}</h3>
+            <h3 className="text-2xl font-black tracking-tight mb-8">Editează Profil</h3>
             <form action={updateProfileAction} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-4">
-                  {lang === 'ro' ? 'Nume Complet' : 'Full Name'}
+                  Nume Complet
                 </label>
                 <input 
                   name="full_name"
@@ -209,12 +206,12 @@ export default async function AdminUsersPage({
                   className="w-full bg-muted/10 border-none rounded-2xl px-6 py-4 font-bold text-muted-foreground cursor-not-allowed"
                 />
                 <p className="text-[10px] text-muted-foreground ml-4 font-bold italic">
-                  {lang === 'ro' ? '* Email-ul nu poate fi modificat pentru conturile administrative.' : '* Email cannot be changed for administrative accounts.'}
+                  * Email-ul nu poate fi modificat pentru conturile administrative.
                 </p>
               </div>
               <Button type="submit" className="w-full rounded-2xl h-14 font-black gap-2 shadow-xl shadow-primary/10">
                 <Save className="w-5 h-5" />
-                {lang === 'ro' ? 'Salvează Profilul' : 'Save Profile'}
+                Salvează Profilul
               </Button>
             </form>
           </Card>

@@ -2,18 +2,15 @@
 
 import React, { useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { Language } from '@/lib/i18n';
-import { Button } from './Button';
-import { LanguageToggle } from './LanguageToggle';
 import { Menu, X, ChevronRight, MapPin, Phone, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Button } from './Button';
 
 interface NavbarProps {
-  lang: Language;
   t: any;
 }
 
-export function Navbar({ lang, t }: NavbarProps) {
+export function Navbar({ t }: NavbarProps) {
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoClicks, setLogoClicks] = useState(0);
@@ -23,7 +20,7 @@ export function Navbar({ lang, t }: NavbarProps) {
   const handleLogoClick = () => {
     setLogoClicks(prev => prev + 1);
     if (logoClicks + 1 >= 5) {
-      router.push(`/admin/login?lang=${lang}`);
+      router.push(`/admin/login`);
       setLogoClicks(0);
     }
     // Reset clicks after 3 seconds of inactivity
@@ -70,7 +67,7 @@ export function Navbar({ lang, t }: NavbarProps) {
             <div className="w-10 h-10 md:w-12 md:h-12 bg-primary rounded-2xl flex items-center justify-center text-primary-foreground font-black shadow-lg shadow-primary/20 text-xl border border-white/10">B</div>
             <div className="flex flex-col">
               <span className="text-lg md:text-xl font-black text-foreground tracking-tight leading-none">
-                {lang === 'ro' ? 'Comuna Bârnova' : 'Bârnova Village'}
+                Comuna Bârnova
               </span>
               <span className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase mt-1 hidden sm:block">
                 Portal Oficial
@@ -92,10 +89,6 @@ export function Navbar({ lang, t }: NavbarProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-3 mr-2">
-              <LanguageToggle currentLang={lang} />
-            </div>
-            
             <a href="#contact" className="hidden md:block">
               <Button size="md" className="rounded-full px-8 shadow-xl bg-primary hover:bg-primary/90 text-white border-none transform-gpu active:scale-95 transition-all">
                 {t.nav.contact}
@@ -134,8 +127,7 @@ export function Navbar({ lang, t }: NavbarProps) {
                   ))}
                 </div>
                 
-                <div className="pt-4 flex items-center justify-between">
-                  <LanguageToggle currentLang={lang} />
+                <div className="pt-4 flex items-center justify-end">
                   <a href="#contact">
                     <Button className="rounded-2xl px-8 transform-gpu active:scale-95 transition-all">
                       {t.nav.contact}

@@ -5,9 +5,8 @@ import { getBrowserService } from '@/lib/supabase/services.client'
 import { Button } from '@/components/ui/Button'
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/Card'
 import { Mail, AlertCircle, CheckCircle2, Loader2, ArrowRight } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { translations, Language } from '@/lib/i18n'
-import { AdminLanguageToggle } from '@/components/ui/AdminLanguageToggle'
+import { useRouter } from 'next/navigation'
+import { translations } from '@/lib/i18n'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export const dynamic = 'force-dynamic'
@@ -18,11 +17,9 @@ function LoginContent() {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
   const authService = getBrowserService()
   
-  const lang = (searchParams.get('lang') === 'en' ? 'en' : 'ro') as Language
-  const t = translations[lang].admin.login
+  const t = translations.ro.admin.login
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,7 +40,6 @@ function LoginContent() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-6 relative">
       <div className="absolute top-8 right-8 flex items-center gap-4">
-        <AdminLanguageToggle currentLang={lang} />
         <ThemeToggle />
       </div>
 
@@ -65,7 +61,7 @@ function LoginContent() {
               <h2 className="text-2xl font-black tracking-tight">{t.success_title}</h2>
               <p className="text-muted-foreground font-medium">
                 {t.success_msg} <strong>{email}</strong>. 
-                {lang === 'ro' ? ' Dă click pe link pentru a intra în dashboard.' : ' Click the link to enter the dashboard.'}
+                Dă click pe link pentru a intra în dashboard.
               </p>
               <Button 
                 variant="outline" 
@@ -119,7 +115,7 @@ function LoginContent() {
 
         <CardFooter className="pb-8 justify-center">
           <button 
-            onClick={() => router.push(`/?lang=${lang}`)}
+            onClick={() => router.push(`/`)}
             className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
           >
             <ArrowRight className="w-3 h-3 rotate-180" />

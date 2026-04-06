@@ -26,9 +26,8 @@ import Link from 'next/link';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { cn } from '@/lib/utils';
-import { translations, Language } from '@/lib/i18n';
+import { translations } from '@/lib/i18n';
 
 interface HealthData {
   status: string;
@@ -70,24 +69,15 @@ export default function HealthPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshCount, setRefreshCount] = useState(0);
-  const [lang, setLang] = useState<Language>('ro');
 
-  const t = translations[lang].health;
-
-  useEffect(() => {
-    // Detect browser language or use default
-    const savedLang = localStorage.getItem('language') as Language;
-    if (savedLang && (savedLang === 'ro' || savedLang === 'en')) {
-      setLang(savedLang);
-    }
-  }, []);
+  const t = translations.ro.health;
 
   useEffect(() => {
     async function fetchHealth() {
       try {
         setLoading(true);
         const res = await fetch('/api/health');
-        if (!res.ok) throw new Error(lang === 'ro' ? 'Nu s-a putut comunica cu serverul de diagnoză.' : 'Failed to communicate with diagnostic server.');
+        if (!res.ok) throw new Error('Nu s-a putut comunica cu serverul de diagnoză.');
         const healthData = await res.json();
         setData(healthData);
       } catch (err: any) {
@@ -98,7 +88,7 @@ export default function HealthPage() {
     }
 
     fetchHealth();
-  }, [refreshCount, lang]);
+  }, [refreshCount]);
 
   const formatMemory = (bytes: number) => {
     return (bytes / 1024 / 1024).toFixed(2) + ' MB';
@@ -134,7 +124,7 @@ export default function HealthPage() {
         </div>
         <h1 className="text-2xl font-black tracking-tighter mb-2">{t.title}</h1>
         <p className="text-muted-foreground font-bold animate-pulse">
-          {lang === 'ro' ? 'Se verifică integritatea serviciilor...' : 'Checking service integrity...'}
+          Se verifică integritatea serviciilor...
         </p>
       </div>
     );
@@ -165,11 +155,7 @@ export default function HealthPage() {
                 </div>
               </div>
               <h1 className="text-5xl md:text-6xl font-black tracking-tighter leading-none mb-4 italic">
-                {lang === 'ro' ? (
-                  <>Sănătate <span className="text-primary">Servicii</span></>
-                ) : (
-                  <>Service <span className="text-primary">Health</span></>
-                )}
+                Sănătate <span className="text-primary">Servicii</span>
               </h1>
               <p className="text-xl text-muted-foreground font-semibold max-w-2xl">
                 {t.subtitle}
@@ -177,7 +163,6 @@ export default function HealthPage() {
             </div>
             
             <div className="flex items-center gap-4">
-              <LanguageToggle currentLang={lang} />
               <ThemeToggle />
               <Button 
                 onClick={() => setRefreshCount(c => c + 1)} 
@@ -198,7 +183,7 @@ export default function HealthPage() {
           <div className="mb-8 p-6 bg-rose-500/10 border border-rose-500/20 rounded-3xl flex items-center gap-4 text-rose-500">
             <AlertCircle className="w-8 h-8" />
             <div>
-              <p className="font-black text-lg">{lang === 'ro' ? 'Eroare de Monitorizare' : 'Monitoring Error'}</p>
+              <p className="font-black text-lg">Eroare de Monitorizare</p>
               <p className="font-bold opacity-80">{error}</p>
             </div>
           </div>
@@ -215,7 +200,7 @@ export default function HealthPage() {
               <div className="text-4xl font-black mb-4">{data ? formatUptime(data.uptime) : '0z 0o 0m'}</div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-muted-foreground">{lang === 'ro' ? 'Disponibilitate API' : 'API Availability'}</span>
+                  <span className="text-muted-foreground">Disponibilitate API</span>
                   <span className="text-emerald-500">99.9%</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
@@ -284,7 +269,7 @@ export default function HealthPage() {
                   </div>
                   <StatusBadge 
                     connected={data?.services.supabase.status || 'disconnected'} 
-                    label={data?.services.supabase.status === 'connected' ? t.services.connected : (lang === 'ro' ? 'Eroare' : 'Error')} 
+                    label={data?.services.supabase.status === 'connected' ? t.services.connected : 'Eroare'} 
                   />
                 </div>
               </div>
@@ -299,9 +284,9 @@ export default function HealthPage() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <BarChart3 className="w-6 h-6 text-primary" />
-                  <h3 className="text-xl font-black tracking-tight">{lang === 'ro' ? 'Instrumente de Monitorizare' : 'Monitoring Tools'}</h3>
+                  <h3 className="text-xl font-black tracking-tight">Instrumente de Monitorizare</h3>
                 </div>
-                <p className="text-muted-foreground font-semibold">{lang === 'ro' ? 'Acces direct la platformele de gestionare.' : 'Direct access to management platforms.'}</p>
+                <p className="text-muted-foreground font-semibold">Acces direct la platformele de gestionare.</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -23,29 +23,22 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { translations, Language } from '@/lib/i18n'
+import { translations } from '@/lib/i18n'
 import { DynamicGreeting } from '@/components/ui/DynamicGreeting'
 import { HealthMetrics } from '@/components/ui/HealthMetrics'
-import { AdminLanguageToggle } from '@/components/ui/AdminLanguageToggle'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminDashboard({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>
-}) {
-  const params = await searchParams
-  const lang = (params.lang === 'en' ? 'en' : 'ro') as Language
-  const t = translations[lang].admin.dashboard
+export default async function AdminDashboard() {
+  const t = translations.ro.admin.dashboard
   const navT = t.sidebar
 
   const service = await getServerService()
   const user = await service.getUser()
 
   if (!user) {
-    redirect(`/admin/login?lang=${lang}`)
+    redirect(`/admin/login`)
   }
 
   const posts = await service.getAllPosts()
@@ -65,19 +58,19 @@ export default async function AdminDashboard({
         </div>
 
         <nav className="flex-grow space-y-2">
-          <Link href={`/admin/dashboard?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
+          <Link href={`/admin/dashboard`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
             <LayoutDashboard className="w-5 h-5" />
             {navT.dashboard}
           </Link>
-          <Link href={`/admin/posts?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/posts`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <FileText className="w-5 h-5" />
             {navT.posts}
           </Link>
-          <Link href={`/admin/users?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/users`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <UsersIcon className="w-5 h-5" />
             {navT.users}
           </Link>
-          <Link href={`/admin/settings?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/settings`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <Settings className="w-5 h-5" />
             {navT.settings}
           </Link>
@@ -85,7 +78,6 @@ export default async function AdminDashboard({
 
         <div className="pt-8 border-t border-border/50 space-y-6">
           <div className="flex items-center gap-4">
-            <AdminLanguageToggle currentLang={lang} />
             <ThemeToggle />
           </div>
 
@@ -115,7 +107,6 @@ export default async function AdminDashboard({
           <span className="font-black tracking-tighter">Admin</span>
         </div>
         <div className="flex items-center gap-2">
-          <AdminLanguageToggle currentLang={lang} />
           <ThemeToggle />
         </div>
       </header>
@@ -124,17 +115,17 @@ export default async function AdminDashboard({
       <main className="flex-grow p-6 lg:p-12 overflow-y-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
-            <DynamicGreeting lang={lang} />
+            <DynamicGreeting />
             <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
           </div>
           <div className="flex items-center gap-4">
-            <Link href={`/?lang=${lang}`}>
+            <Link href={`/`}>
               <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-6 border-border/50 bg-background/50">
                 <Globe className="w-5 h-5" />
                 {t.view_site}
               </Button>
             </Link>
-            <Link href={`/admin/posts/new?lang=${lang}`}>
+            <Link href={`/admin/posts/new`}>
               <Button className="rounded-2xl font-black gap-2 h-14 px-8 shadow-xl shadow-primary/20">
                 <PlusCircle className="w-5 h-5" />
                 {t.new_post}
@@ -144,7 +135,7 @@ export default async function AdminDashboard({
         </header>
 
         {/* Health Stats */}
-        <HealthMetrics lang={lang} />
+        <HealthMetrics />
 
         {/* Logs & Monitoring Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -214,7 +205,7 @@ export default async function AdminDashboard({
           <Card className="rounded-[3rem] border-none shadow-2xl shadow-primary/5 overflow-hidden bg-background">
             <div className="p-10 border-b border-border/50 flex items-center justify-between">
               <h3 className="text-2xl font-black tracking-tight">{t.recent_posts.title}</h3>
-              <Link href={`/admin/posts?lang=${lang}`} className="text-xs font-black uppercase tracking-widest text-primary hover:underline">
+              <Link href={`/admin/posts`} className="text-xs font-black uppercase tracking-widest text-primary hover:underline">
                 {t.recent_posts.view_all}
               </Link>
             </div>
@@ -248,11 +239,11 @@ export default async function AdminDashboard({
                           </span>
                         </td>
                         <td className="px-10 py-6 text-sm text-muted-foreground font-medium">
-                          {new Date(post.created_at).toLocaleDateString(lang === 'ro' ? 'ro-RO' : 'en-US')}
+                          {new Date(post.created_at).toLocaleDateString('ro-RO')}
                         </td>
                         <td className="px-10 py-6 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <Link href={`/admin/posts/${post.id}?lang=${lang}`}>
+                            <Link href={`/admin/posts/${post.id}`}>
                               <Button variant="outline" size="icon" className="w-10 h-10 rounded-xl border-border/50">
                                 <Pencil className="w-4 h-4" />
                               </Button>

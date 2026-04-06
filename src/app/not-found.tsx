@@ -1,11 +1,7 @@
-import { translations, Language } from '@/lib/i18n';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
 export default async function NotFound() {
-  // We don't have easy access to lang here without complex logic, defaulting to 'ro'
-  const t = translations.ro;
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center space-y-8 animate-fade-in">
@@ -24,11 +20,6 @@ export default async function NotFound() {
           <Link href="/" className="w-full sm:w-auto">
             <Button size="lg" className="w-full">
               Înapoi la Acasă
-            </Button>
-          </Link>
-          <Link href="/?lang=en" className="w-full sm:w-auto">
-            <Button variant="outline" size="lg" className="w-full">
-              Switch to English
             </Button>
           </Link>
         </div>

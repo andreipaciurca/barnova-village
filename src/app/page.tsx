@@ -2,10 +2,9 @@ import { getPosts } from '@/lib/wordpress';
 import { getNewsFeed, NewsItem } from '@/lib/news';
 import { getAdministrationData } from '@/lib/administration';
 import { getServerService } from '@/lib/supabase/services.server';
-import { translations, Language, Feature } from '@/lib/i18n';
+import { translations, Feature } from '@/lib/i18n';
 import { headers } from 'next/headers';
 import { Button } from '@/components/ui/Button';
-import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import * as motion from 'framer-motion/client';
@@ -39,25 +38,12 @@ import {
   X
 } from 'lucide-react';
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}) {
+export default async function Home() {
   const posts = await getPosts();
   const rssNews = await getNewsFeed();
   const adminData = await getAdministrationData();
-  const headersList = await headers();
-  const acceptLanguage = headersList.get('accept-language') || '';
   
-  const resolvedParams = await searchParams;
-  let lang: Language = 'ro';
-  
-  if (resolvedParams.lang === 'en') {
-    lang = 'en';
-  }
-
-  const t = translations[lang];
+  const t = translations.ro;
 
   // Modificare pentru a include link-ul către Admin în footer sau altundeva dacă ești logat
   const service = await getServerService();
@@ -115,7 +101,7 @@ export default async function Home({
       </div>
 
       {/* Dynamic Navigation Component Wrapper */}
-      <Navbar lang={lang} t={t} />
+      <Navbar t={t} />
 
       <main className="flex-grow">
         {/* Hero Section */}
@@ -137,7 +123,7 @@ export default async function Home({
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                 </span>
-                {lang === 'ro' ? 'Portal Digital Oficial v2.1' : 'Official Digital Portal v2.1'}
+                Portal Digital Oficial v2.1
               </div>
             </motion.div>
 
@@ -192,7 +178,7 @@ export default async function Home({
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-4 ring-1 ring-emerald-500/20 backdrop-blur-md"
               >
                 <Activity className="w-3 h-3" />
-                {lang === 'ro' ? 'Date Live' : 'Live Data'}
+                Date Live
               </motion.div>
               <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">{t.features.stats.title}</h2>
               <p className="text-muted-foreground text-xl max-w-2xl mx-auto font-medium">{t.features.stats.subtitle}</p>
@@ -319,7 +305,7 @@ export default async function Home({
                 
                 <div className="w-full flex items-center justify-between mb-12 relative z-10">
                   <div className="text-left">
-                    <h3 className="text-2xl font-black mb-1 text-emerald-600 dark:text-emerald-400">{lang === 'ro' ? 'Distribuție Vârstă' : 'Age Distribution'}</h3>
+                    <h3 className="text-2xl font-black mb-1 text-emerald-600 dark:text-emerald-400">Distribuție Vârstă</h3>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Structură Demografică</p>
                   </div>
                   <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 shadow-lg shadow-emerald-500/10">
@@ -396,7 +382,7 @@ export default async function Home({
                 whileInView={{ opacity: 1 }}
                 className="text-3xl md:text-5xl font-black mb-4"
               >
-                {lang === 'ro' ? 'Descoperiți Facilitățile' : 'Discover Facilities'}
+                Descoperiți Facilitățile
               </motion.h2>
               <p className="text-muted-foreground text-lg">Tot ce aveți nevoie într-un singur loc.</p>
             </div>
@@ -476,7 +462,7 @@ export default async function Home({
                             {t.news.official_tag}
                           </span>
                           <time className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                            {new Date(news.pubDate).toLocaleDateString(lang === 'ro' ? 'ro-RO' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            {new Date(news.pubDate).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })}
                           </time>
                         </CardHeader>
                         <CardContent className="flex-1">
@@ -513,7 +499,7 @@ export default async function Home({
                           {t.news.official_tag}
                         </span>
                         <time className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                          {new Date(post.date).toLocaleDateString(lang === 'ro' ? 'ro-RO' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          {new Date(post.date).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </time>
                       </CardHeader>
                       <CardContent className="flex-1">
@@ -569,11 +555,9 @@ export default async function Home({
                     </div>
                     
                     <div>
-                      <h4 className="text-xl font-black mb-2">{lang === 'ro' ? 'Rămâneți conectați' : 'Stay Connected'}</h4>
+                      <h4 className="text-xl font-black mb-2">Rămâneți conectați</h4>
                       <p className="text-muted-foreground font-medium px-4">
-                        {lang === 'ro' 
-                          ? 'Urmăriți-ne pe Facebook pentru ultimele postări, evenimente și transmisiuni live direct din comunitate.'
-                          : 'Follow us on Facebook for the latest posts, events, and live broadcasts directly from the community.'}
+                        Urmăriți-ne pe Facebook pentru ultimele postări, evenimente și transmisiuni live direct din comunitate.
                       </p>
                     </div>
 
@@ -583,7 +567,7 @@ export default async function Home({
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-8 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl shadow-blue-600/20"
                     >
-                      {lang === 'ro' ? 'Urmărește Pagina' : 'Follow Page'}
+                      Urmărește Pagina
                       <ExternalLink className="w-5 h-5" />
                     </a>
                   </div>
@@ -639,8 +623,8 @@ export default async function Home({
       <footer id="contact" className="bg-muted/50 border-t border-border/50 pt-16 pb-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-16">
-            <div className="md:col-span-3">
-              <div className="flex items-center gap-3 mb-8">
+              <div className="md:col-span-3">
+              <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground font-black shadow-lg shadow-primary/20">B</div>
                 <div className="flex flex-col">
                   <span className="text-xl font-black tracking-tighter leading-none">Comuna Bârnova</span>
@@ -656,6 +640,9 @@ export default async function Home({
                   </div>
                 </div>
               </div>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-6 opacity-80">
+                {t.footer.disclaimer}
+              </p>
               <p className="text-muted-foreground text-lg leading-relaxed max-w-sm">
                 {t.footer.tagline}
               </p>

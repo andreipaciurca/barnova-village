@@ -15,8 +15,7 @@ import {
   AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
-import { translations, Language } from '@/lib/i18n'
-import { AdminLanguageToggle } from '@/components/ui/AdminLanguageToggle'
+import { translations } from '@/lib/i18n'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { revalidatePath } from 'next/cache'
 
@@ -25,18 +24,17 @@ export const dynamic = 'force-dynamic'
 export default async function AdminSettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ lang?: string; success?: string; error?: string }>
+  searchParams: Promise<{ success?: string; error?: string }>
 }) {
   const params = await searchParams
-  const lang = (params.lang === 'en' ? 'en' : 'ro') as Language
-  const t = translations[lang].admin.settings
-  const navT = translations[lang].admin.dashboard.sidebar
+  const t = translations.ro.admin.settings
+  const navT = translations.ro.admin.dashboard.sidebar
 
   const service = await getServerService()
   const user = await service.getUser()
 
   if (!user) {
-    redirect(`/admin/login?lang=${lang}`)
+    redirect(`/admin/login`)
   }
 
   const generalSettings = await service.getSettings('general')
@@ -57,9 +55,9 @@ export default async function AdminSettingsPage({
 
     if (!result.error) {
       revalidatePath('/admin/settings')
-      redirect(`/admin/settings?lang=${lang}&success=true`)
+      redirect(`/admin/settings?success=true`)
     } else {
-      redirect(`/admin/settings?lang=${lang}&error=true`)
+      redirect(`/admin/settings?error=true`)
     }
   }
 
@@ -78,9 +76,9 @@ export default async function AdminSettingsPage({
 
     if (!result.error) {
       revalidatePath('/admin/settings')
-      redirect(`/admin/settings?lang=${lang}&success=true`)
+      redirect(`/admin/settings?success=true`)
     } else {
-      redirect(`/admin/settings?lang=${lang}&error=true`)
+      redirect(`/admin/settings?error=true`)
     }
   }
 
@@ -99,19 +97,19 @@ export default async function AdminSettingsPage({
         </div>
 
         <nav className="flex-grow space-y-2">
-          <Link href={`/admin/dashboard?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/dashboard`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <LayoutDashboard className="w-5 h-5" />
             {navT.dashboard}
           </Link>
-          <Link href={`/admin/posts?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/posts`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <FileText className="w-5 h-5" />
             {navT.posts}
           </Link>
-          <Link href={`/admin/users?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
+          <Link href={`/admin/users`} className="flex items-center gap-3 px-6 py-4 rounded-2xl text-muted-foreground hover:bg-muted/50 hover:text-foreground font-bold transition-all">
             <UsersIcon className="w-5 h-5" />
             {navT.users}
           </Link>
-          <Link href={`/admin/settings?lang=${lang}`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
+          <Link href={`/admin/settings`} className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-primary/10 text-primary font-black transition-all">
             <Settings className="w-5 h-5" />
             {navT.settings}
           </Link>
@@ -119,7 +117,6 @@ export default async function AdminSettingsPage({
 
         <div className="pt-8 border-t border-border/50 space-y-6">
           <div className="flex items-center gap-4">
-            <AdminLanguageToggle currentLang={lang} />
             <ThemeToggle />
           </div>
           <form action="/auth/signout" method="post">
@@ -138,7 +135,7 @@ export default async function AdminSettingsPage({
             <h2 className="text-4xl font-black tracking-tight mb-2">{t.title}</h2>
             <p className="text-muted-foreground font-semibold">{t.subtitle}</p>
           </div>
-          <Link href={`/admin/dashboard?lang=${lang}`}>
+          <Link href={`/admin/dashboard`}>
             <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-6 border-border/50 bg-background/50">
               <ChevronLeft className="w-5 h-5" />
               {t.back}

@@ -1,4 +1,4 @@
-export type Language = 'ro' | 'en';
+export type Language = 'ro';
 
 export interface Feature {
   title: string;
@@ -38,7 +38,7 @@ export const translations = {
         birth_rate: 'Natalitate',
         budget_title: 'Structura Bugetului 2024',
         investments: 'Investiții',
-        salaries: 'Cheltuieli Personal',
+        salaries: 'Cheieli Personal',
         others: 'Alte Cheltuieli',
       },
       digital: {
@@ -78,6 +78,7 @@ export const translations = {
     },
     footer: {
       tagline: 'Partenerul tău în era digitală. Modernizăm serviciile publice pentru o comunitate mai puternică.',
+      disclaimer: 'Acest site este un proiect demo și nu este afiliat cu Primăria Bârnova sau Consiliul Județean Iași. Datele sunt preluate din surse publice și API-uri guvernamentale.',
       useful_links: 'Link-uri utile',
       official_resources: 'Resurse Oficiale',
       portal: 'Portal Cetățean',
@@ -188,187 +189,5 @@ export const translations = {
         back: 'Înapoi la Dashboard',
       }
     }
-  },
-  en: {
-    nav: {
-      home: 'Home',
-      admin: 'Administration',
-      services: 'Services',
-      tourism: 'Tourism',
-      contact: 'Contact',
-    },
-    hero: {
-      title: 'The Future of Bârnova Village',
-      subtitle: 'A modern, intuitive, and fast platform for all residents of our village. Official information, digital services, and real-time news.',
-      cta_news: 'See Announcements',
-      cta_services: 'Services Guide',
-    },
-    news: {
-      title: 'Recent Announcements',
-      subtitle: 'The latest news and updates from the Town Hall',
-      view_all: 'View all news',
-      official_tag: 'Official',
-      read_more: 'Read more',
-    },
-    features: {
-      stats: {
-        title: 'Bârnova in Figures',
-        subtitle: 'Open data about our community (Source: data.gov.ro)',
-        population: 'Population (2021)',
-        area: 'Area',
-        density: 'Density',
-        birth_rate: 'Birth Rate',
-        budget_title: '2024 Budget Structure',
-        investments: 'Investments',
-        salaries: 'Personnel Costs',
-        others: 'Other Expenses',
-      },
-      digital: {
-        title: 'Digital Services',
-        description: 'Online access to documents, requests, and tax payments.',
-        items: ['Online Payments', 'Forms', 'Reports'],
-      },
-      tourism: {
-        title: 'Explore Bârnova',
-        description: 'Discover the Bârnova Monastery, Repedea Forest, and local history.',
-        items: ['Monastery', 'Repedea Forest', 'Tourism'],
-      },
-      transparency: {
-        title: 'Decision Transparency',
-        description: 'Local Official Gazette, urban plans, and council decisions.',
-        items: ['Gazette', 'Urban Plans', 'Decisions'],
-      },
-      administration: {
-        title: 'Local Administration',
-        description: 'Town hall schedule, departments, and direct contact.',
-        items: ['Schedule', 'Departments', 'Contact'],
-      },
-      governance: {
-        title: 'Local Governance',
-        subtitle: 'Mayor, Vice-Mayor and Local Council (2024-2028 Mandate)',
-        mayor: 'Mayor',
-        viceMayor: 'Vice-Mayor',
-        council: 'Local Council',
-        party: 'Party',
-      },
-    },
-    archive: {
-      title: 'Continuity and History',
-      subtitle: 'Quick access to the old portal and document archive primariabarnova.ro',
-      cta: 'Access Old Site',
-      description: 'To ensure a smooth transition, the old site remains available as a digital archive for consulting historical documents and administrative history.',
-    },
-    footer: {
-      tagline: 'Your partner in the digital era. Modernizing public services for a stronger community.',
-      useful_links: 'Useful links',
-      official_resources: 'Official Resources',
-      portal: 'Citizen Portal',
-      payments: 'Online Payments (Ghiseul.ro)',
-      documents: 'Forms and Documents',
-      contact: 'Contact & Schedule',
-      ghiseul: 'Ghiseul.ro',
-      mai: 'M.A.I. (Passports/Licenses)',
-      gov: 'Romanian Government (gov.ro)',
-      data_gov: 'Open Data Portal (data.gov.ro)',
-      dna: 'National Anti-Corruption Directorate (dna.ro)',
-      transparency: 'Institutional Transparency',
-      copyright: 'Bârnova Town Hall. Site built for the future.',
-      created_by: 'Created by',
-    },
-    health: {
-      title: 'System Health & Diagnosis',
-      subtitle: 'Real-time monitoring of Bârnova Village digital infrastructure',
-      status_online: 'SYSTEM ONLINE',
-      status_offline: 'SYSTEM OFFLINE',
-      uptime: 'Uptime',
-      version: 'Software Version',
-      last_update: 'Last Update',
-      memory: 'Memory Usage',
-      refresh: 'Refresh Data',
-      back: 'Back to Home',
-      services: {
-        title: 'Service Status',
-        vercel: 'Cloud Infrastructure (Vercel)',
-        supabase: 'Database (Supabase)',
-        connected: 'Connected',
-        disconnected: 'Disconnected',
-      },
-      useful_links: {
-        title: 'Useful Links & Resources',
-        description: 'Quick access to government portals and monitoring platforms.',
-      },
-    },
-    admin: {
-      login: {
-        title: 'Admin Portal',
-        subtitle: 'Secure authentication via Magic Link',
-        success_title: 'Check your email!',
-        success_msg: 'We sent an authentication link to',
-        success_cta: 'Try another email',
-        label_email: 'Administrative Email',
-        placeholder: 'name@barnova.ro',
-        btn_send: 'Send Access Link',
-        back_to_site: 'Back to public site',
-      },
-      dashboard: {
-        title: 'Control Panel',
-        greeting_morning: 'Good morning!',
-        greeting_day: 'Good day!',
-        greeting_evening: 'Good evening!',
-        subtitle: 'Here is what is happening today in Bârnova commune.',
-        view_site: 'View Site',
-        new_post: 'New Post',
-        stats: {
-          active_posts: 'Active Posts',
-          system_health: 'System Health',
-          visitors: 'Daily Visitors',
-          status_active: 'Active',
-        },
-        recent_posts: {
-          title: 'Recent Posts',
-          subtitle: 'Latest updates published on the site',
-          view_all: 'View all',
-          empty: 'No recent posts found.',
-        },
-        sidebar: {
-          dashboard: 'Dashboard',
-          posts: 'Posts & News',
-          users: 'Users',
-          settings: 'Site Settings',
-          logout: 'Logout',
-          admin_tag: 'Administrator',
-        }
-      },
-      users: {
-        title: 'User Management',
-        subtitle: 'View and manage accounts with administrative access.',
-        current_user: 'Current User',
-        email: 'Email',
-        role: 'Role',
-        last_login: 'Last Login',
-        actions: 'Actions',
-        back: 'Back to Dashboard',
-      },
-      settings: {
-        title: 'Site Settings',
-        subtitle: 'Configure general parameters of the Bârnova Village portal.',
-        general: {
-          title: 'General Information',
-          site_name: 'Site Name',
-          site_description: 'Site Description',
-          contact_email: 'Contact Email',
-        },
-        features: {
-          title: 'Active Features',
-          show_news: 'Show News',
-          show_stats: 'Show Stats',
-          show_weather: 'Show Weather',
-        },
-        save: 'Save Changes',
-        success: 'Settings saved successfully!',
-        error: 'Error saving settings.',
-        back: 'Back to Dashboard',
-      }
-    }
-  },
+  }
 };

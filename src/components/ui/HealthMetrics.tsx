@@ -1,17 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { translations, Language } from '@/lib/i18n';
+import { translations } from '@/lib/i18n';
 import { Activity, Database, Zap } from 'lucide-react';
 import { Card } from './Card';
 
-interface HealthMetricsProps {
-  lang: Language;
-}
-
-export function HealthMetrics({ lang }: HealthMetricsProps) {
+export function HealthMetrics() {
   const [data, setData] = useState<any>(null);
-  const t = translations[lang].admin.dashboard.stats;
+  const t = translations.ro.admin.dashboard.stats;
 
   useEffect(() => {
     fetch('/api/health')

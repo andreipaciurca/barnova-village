@@ -1,15 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { translations, Language } from '@/lib/i18n';
+import { translations } from '@/lib/i18n';
 
-interface DynamicGreetingProps {
-  lang: Language;
-}
-
-export function DynamicGreeting({ lang }: DynamicGreetingProps) {
+export function DynamicGreeting() {
   const [greeting, setGreeting] = useState('');
-  const t = translations[lang].admin.dashboard;
+  const t = translations.ro.admin.dashboard;
 
   useEffect(() => {
     const hour = new Date().getHours();

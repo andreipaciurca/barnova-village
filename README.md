@@ -1,4 +1,4 @@
-# Bârnova Village - Modern Civic Experience
+# Bârnova Village - Experiență Civică Modernă
 
 ![Live Demo](https://img.shields.io/badge/demo-online-brightgreen.svg)
 [![barnova.vercel.app](https://img.shields.io/badge/site-barnova.vercel.app-blue.svg)](https://barnova.vercel.app/)
@@ -7,46 +7,50 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC?logo=tailwind-css)
 ![Supabase](https://img.shields.io/badge/Supabase-Backend-emerald?logo=supabase)
 
-A modern, fast, and transparent digital portal for the Bârnova community. This project transforms the traditional village website into a high-performance experience using **Next.js 15**, **Supabase**, and **Tailwind CSS**.
+Un portal digital modern, rapid și transparent pentru comunitatea din Bârnova. Acest proiect transformă site-ul tradițional al comunei într-o experiență de înaltă performanță folosind **Next.js 15**, **Supabase** și **Tailwind CSS**.
 
 ---
 
-### 🌍 Language / Limbă
-Choose your preferred language for documentation:
-- 🇺🇸 [**English Documentation**](README.en.md)
-- 🇷🇴 [**Documentație în Română**](README.ro.md)
+### ⚠️ Proiect Demo
+**Acest site este un proiect demo și nu este afiliat cu Primăria Bârnova sau Consiliul Județean Iași. Datele sunt preluate din surse publice și API-uri guvernamentale.**
 
 ---
 
-### 🚀 Key Features
-- **Modern UI/UX**: Clean, responsive design optimized for mobile and desktop.
-- **Automated Data**: Daily scraping of local leadership and department information.
-- **Election Integrity**: Real-time synchronization with official BEC/AEP election results.
-- **Admin Dashboard**: Secure, passwordless (Magic Link) portal for managing news and announcements.
-- **Digital Transparency**: Direct integration with open data sources like `data.gov.ro`.
-- **System Health**: Real-time diagnostic dashboard at `/health`.
+### 🚀 Caracteristici Cheie
+- **UI/UX Modern**: Design curat, receptiv, optimizat pentru mobil și desktop.
+- **Date Automatizate**: Scraping zilnic pentru informații despre conducerea locală și departamente.
+- **Integritate Electorală**: Sincronizare în timp real cu rezultatele oficiale BEC/AEP.
+- **Admin Dashboard**: Portal securizat (Magic Link) pentru gestionarea știrilor și anunțurilor.
+- **Transparență Digitală**: Integrare directă cu surse de date deschise precum `data.gov.ro`.
+- **Sănătate Sistem**: Dashboard de diagnoză în timp real la `/health`.
 
 ---
 
-### 🛠️ Tech Stack
+### 🛠️ Tehnologii Utilizate
 - **Frontend**: Next.js 15 (App Router, Turbopack)
 - **Styling**: Tailwind CSS & Lucide Icons
 - **Backend**: Supabase (PostgreSQL, Auth, Edge Functions)
 - **Deployment**: Vercel (Hobby Tier)
-- **Automation**: GitHub Actions (Daily Sync)
+- **Automatizare**: GitHub Actions (Daily Sync)
 - **Testing**: Vitest & Playwright
 
 ---
 
-### 📈 Monitoring & Diagnotics
-We maintain high availability through a public health dashboard:
-- **Status Page**: [barnova.vercel.app/health](https://barnova.vercel.app/health)
-- **API Status**: [barnova.vercel.app/api/health](https://barnova.vercel.app/api/health)
+### 📈 Monitorizare și Diagnoză
+Menținem o disponibilitate ridicată printr-un dashboard public:
+- **Pagina de Status**: [barnova.vercel.app/health](https://barnova.vercel.app/health)
+- **Status API**: [barnova.vercel.app/api/health](https://barnova.vercel.app/api/health)
 
 ---
 
-### 🤝 Civic Mission
-This project is built to empower citizens with easy access to local information, promoting transparency and digital efficiency in the public sector.
+### 📖 Documentație Detaliată
+Pentru instrucțiuni de instalare și configurare, consultați:
+- [**Documentație în Română**](README.ro.md)
 
 ---
-*Created for a better community.*
+
+### 🤝 Misiune Civică
+Acest proiect este construit pentru a oferi cetățenilor acces ușor la informații locale, promovând transparența și eficiența digitală în sectorul public.
+
+---
+*Creat pentru o comunitate mai bună.*

@@ -132,7 +132,7 @@ export default async function Home() {
       </div>
 
       {/* Dynamic Navigation Component Wrapper */}
-      <Navbar t={t} />
+      <Navbar t={t} isSarcastic={isSarcastic} />
 
       <main className="flex-grow">
         {/* Hero Section */}
@@ -743,11 +743,6 @@ export default async function Home() {
           <div className="pt-12 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <div>&copy; {new Date().getFullYear()} {t.footer.copyright}</div>
             <div className="flex items-center gap-3">
-              {user && (
-                <Link href="/admin/dashboard" className="text-primary hover:underline bg-primary/10 px-4 py-2 rounded-full border border-primary/20 mr-4">
-                  Admin Dashboard
-                </Link>
-              )}
               <span className="opacity-50">{t.footer.created_by}</span>
               <a href="https://andreipaciurca.github.io" className="text-foreground hover:text-primary transition-colors bg-accent/50 px-4 py-2 rounded-full border border-border/50">
                 Andrei Alexandru Paciurca

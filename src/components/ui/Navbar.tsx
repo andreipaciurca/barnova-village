@@ -6,12 +6,14 @@ import { Menu, X, ChevronRight, MapPin, Phone, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './Button';
 import { ThemeToggle } from './ThemeToggle';
+import { SarcasticToggle } from './SarcasticToggle';
 
 interface NavbarProps {
   t: any;
+  isSarcastic?: boolean;
 }
 
-export function Navbar({ t }: NavbarProps) {
+export function Navbar({ t, isSarcastic = false }: NavbarProps) {
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoClicks, setLogoClicks] = useState(0);
@@ -90,6 +92,7 @@ export function Navbar({ t }: NavbarProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <SarcasticToggle initialValue={isSarcastic} />
             <ThemeToggle />
             
             <a href="#contact" className="hidden md:block">

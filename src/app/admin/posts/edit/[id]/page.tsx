@@ -1,14 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { getBrowserService } from '@/lib/supabase/services.client'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { ChevronLeft, Save, Loader2 } from 'lucide-react'
+import { ChevronLeft, Save, Loader2, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
-export default function EditPostPage({ params }: { params: { id: string } }) {
+export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params)
+  const id = resolvedParams.id
+  
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
@@ -16,6 +19,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
   const [status, setStatus] = useState('draft')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const service = getBrowserService()
 
@@ -23,12 +27,18 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function fetchPost() {
+      if (!id) {
+        console.warn('ID-ul postării lipsește din parametri.')
+        return
+      }
+      
+      console.log('Preluare postare cu ID:', id)
       try {
-        const data = await service.getPostById(params.id)
+        const data = await service.getPostById(id)
+        console.log('Date postare primite:', data)
 
         if (!data) {
-          alert('Eroare: Postarea nu a fost găsită.')
-          router.push('/admin/posts')
+          setError('Postarea nu a fost găsită în baza de date. (ID: ' + id + ')')
         } else {
           setPost(data)
           setTitle(data.title || '')
@@ -39,15 +49,14 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
         }
       } catch (err) {
         console.error('Error fetching post:', err)
-        alert('Eroare la preluarea postării. Verifică conexiunea la baza de date.')
-        router.push('/admin/posts')
+        setError('Eroare la preluarea postării. Verifică conexiunea la baza de date.')
       } finally {
         setFetching(false)
       }
     }
 
     fetchPost()
-  }, [params.id, router, service])
+  }, [id, service])
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -79,13 +88,14 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
     // Prepare data
     const now = new Date().toISOString()
     const updateData: any = {
-      id: params.id,
+      id: id,
       title,
       slug,
       content,
       excerpt,
       status,
       updated_at: now,
+      author_id: post?.author_id || user.id, // Ensure author_id is preserved or set
     }
 
     // Set published_at if moving to published and it wasn't already set
@@ -100,7 +110,8 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
     const { error } = await service.upsertPost(updateData)
 
     if (error) {
-      alert('Eroare: ' + error.message)
+      console.error('Eroare la salvare:', error)
+      alert('Eroare la salvare: ' + error.message)
       setLoading(false)
     } else {
       router.push('/admin/posts')
@@ -110,8 +121,28 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
 
   if (fetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-muted/10">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+          <p className="font-bold text-muted-foreground">Se încarcă postarea...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/10 p-6">
+        <Card className="max-w-md w-full p-10 text-center rounded-[3rem] shadow-2xl border-none">
+          <div className="w-20 h-20 bg-destructive/10 text-destructive rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-10 h-10" />
+          </div>
+          <h2 className="text-2xl font-black mb-4">Eroare de acces</h2>
+          <p className="text-muted-foreground font-semibold mb-8">{error}</p>
+          <Link href="/admin/posts">
+            <Button className="w-full rounded-2xl h-14 font-black">Înapoi la Postări</Button>
+          </Link>
+        </Card>
       </div>
     )
   }

@@ -1,6 +1,7 @@
 import { getPosts } from '@/lib/wordpress';
 import { getNewsFeed, NewsItem } from '@/lib/news';
 import { getAdministrationData } from '@/lib/administration';
+import { getVillageStats } from '@/lib/stats';
 import { getServerService } from '@/lib/supabase/services.server';
 import { translations, Feature } from '@/lib/i18n';
 import { headers } from 'next/headers';
@@ -42,6 +43,7 @@ export default async function Home() {
   const posts = await getPosts();
   const rssNews = await getNewsFeed();
   const adminData = await getAdministrationData();
+  const villageStats = await getVillageStats();
   
   const service = await getServerService();
   const user = await service.getUser();
@@ -204,9 +206,9 @@ export default async function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
               {[
-                { label: t.features.stats.population, value: 7913, suffix: '', sub: '+12%', icon: Users, color: 'text-blue-500' },
-                { label: t.features.stats.area, value: 42.35, suffix: ' km²', sub: 'Regiune Metr.', icon: MapPin, color: 'text-emerald-500' },
-                { label: t.features.stats.birth_rate, value: 11.7, suffix: '‰', sub: '> Media Jud.', icon: TrendingUp, color: 'text-amber-500' },
+                { label: t.features.stats.population, value: villageStats.population, suffix: '', sub: villageStats.populationGrowth, icon: Users, color: 'text-blue-500' },
+                { label: t.features.stats.area, value: villageStats.area, suffix: ' km²', sub: villageStats.areaType, icon: MapPin, color: 'text-emerald-500' },
+                { label: t.features.stats.birth_rate, value: villageStats.birthRate, suffix: '‰', sub: villageStats.birthRateTrend, icon: TrendingUp, color: 'text-amber-500' },
               ].map((stat, idx) => (
                 <motion.div
                   key={stat.label}
@@ -280,9 +282,9 @@ export default async function Home() {
 
                 <div className="space-y-10 relative z-10">
                   {[
-                    { label: t.features.stats.investments, val: 45, color: 'from-blue-600 to-indigo-600', icon: TrendingUp },
-                    { label: t.features.stats.salaries, val: 30, color: 'from-emerald-500 to-teal-500', icon: Users },
-                    { label: t.features.stats.others, val: 25, color: 'from-amber-500 to-orange-500', icon: Activity },
+                    { label: t.features.stats.investments, val: villageStats.budget.investments, color: 'from-blue-600 to-indigo-600', icon: TrendingUp },
+                    { label: t.features.stats.salaries, val: villageStats.budget.salaries, color: 'from-emerald-500 to-teal-500', icon: Users },
+                    { label: t.features.stats.others, val: villageStats.budget.others, color: 'from-amber-500 to-orange-500', icon: Activity },
                   ].map((item, i) => (
                     <div key={item.label} className="group/item">
                       <div className="flex justify-between items-end mb-3">
@@ -343,7 +345,7 @@ export default async function Home() {
                       stroke="var(--primary)" strokeWidth="12" 
                       strokeDasharray="263.89"
                       initial={{ strokeDashoffset: 263.89 }}
-                      whileInView={{ strokeDashoffset: 263.89 * (1 - 0.706) }}
+                      whileInView={{ strokeDashoffset: 263.89 * (1 - villageStats.demographics.activePopulation / 100) }}
                       transition={{ duration: 2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       strokeLinecap="round"
                     />
@@ -355,7 +357,7 @@ export default async function Home() {
                       transition={{ delay: 1, duration: 0.5 }}
                       className="text-5xl font-black text-primary tracking-tighter"
                     >
-                      70.6%
+                      {villageStats.demographics.activePopulation}%
                     </motion.span>
                     <motion.span 
                       initial={{ opacity: 0 }}

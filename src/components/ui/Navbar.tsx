@@ -5,6 +5,7 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-
 import { Menu, X, ChevronRight, MapPin, Phone, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './Button';
+import { ThemeToggle } from './ThemeToggle';
 
 interface NavbarProps {
   t: any;
@@ -89,6 +90,8 @@ export function Navbar({ t }: NavbarProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
+            
             <a href="#contact" className="hidden md:block">
               <Button size="md" className="rounded-full px-8 shadow-xl bg-primary hover:bg-primary/90 text-white border-none transform-gpu active:scale-95 transition-all">
                 {t.nav.contact}

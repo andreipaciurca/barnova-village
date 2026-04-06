@@ -1,4 +1,3 @@
-import { getPosts } from '@/lib/wordpress';
 import { getNewsFeed, NewsItem } from '@/lib/news';
 import { getAdministrationData } from '@/lib/administration';
 import { getVillageStats } from '@/lib/stats';
@@ -42,7 +41,6 @@ import {
 } from 'lucide-react';
 
 export default async function Home() {
-  const posts = await getPosts();
   const rssNews = await getNewsFeed();
   const adminData = await getAdministrationData();
   const villageStats = await getVillageStats();
@@ -56,6 +54,7 @@ export default async function Home() {
 
   const t = sarcasticTranslations ? {
     ...translations.ro,
+    nav: { ...translations.ro.nav, ...sarcasticTranslations.nav },
     hero: { ...translations.ro.hero, ...sarcasticTranslations.hero },
     news: { ...translations.ro.news, ...sarcasticTranslations.news },
     features: { 
@@ -407,7 +406,7 @@ export default async function Home() {
         </section>
 
         {/* Features Bento Grid */}
-        <section id="services" className="py-16 bg-muted/30 relative contain-layout">
+        <section id="digital" className="py-16 bg-muted/30 relative contain-layout">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-10">
               <motion.h2 
@@ -490,11 +489,11 @@ export default async function Home() {
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ delay: idx * 0.1 }}
                   >
-                    <a href={news.link} target="_blank" rel="noopener noreferrer" className="block h-full">
+                    <a href={news.link} target={news.source === 'supabase' ? '_self' : '_blank'} rel={news.source === 'supabase' ? '' : 'noopener noreferrer'} className="block h-full">
                       <Card className="group h-full flex flex-col border-none shadow-none bg-muted/50 hover:bg-background hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 rounded-[2.5rem] overflow-hidden">
                         <CardHeader className="flex flex-row items-center justify-between pb-8">
                           <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
-                            {t.news.official_tag}
+                            {news.source === 'supabase' ? 'Intern' : t.news.official_tag}
                           </span>
                           <time className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
                             {new Date(news.pubDate).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -521,41 +520,11 @@ export default async function Home() {
                       </Card>
                     </a>
                   </motion.div>
-                )) : posts.slice(0, 4).map((post, idx) => (
-                  <motion.div
-                    key={post.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: idx * 0.1 }}
-                  >
-                    <Card className="group h-full flex flex-col border-none shadow-none bg-muted/50 hover:bg-background hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 rounded-[2.5rem]">
-                      <CardHeader className="flex flex-row items-center justify-between pb-8">
-                        <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
-                          {t.news.official_tag}
-                        </span>
-                        <time className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                          {new Date(post.date).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </time>
-                      </CardHeader>
-                      <CardContent className="flex-1">
-                        <h3 
-                          className="text-xl font-black mb-6 leading-tight group-hover:text-primary transition-colors duration-300 line-clamp-2"
-                          dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                        />
-                        <div 
-                          className="text-muted-foreground leading-relaxed line-clamp-3 font-medium"
-                          dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
-                        />
-                      </CardContent>
-                      <CardFooter className="pt-8">
-                        <button className="flex items-center gap-2 text-sm font-black text-primary group/btn">
-                          {t.news.read_more}
-                          <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                        </button>
-                      </CardFooter>
-                    </Card>
-                  </motion.div>
-                ))}
+                )) : (
+                  <div className="col-span-full py-12 text-center text-muted-foreground font-medium">
+                    Nu există anunțuri disponibile momentan.
+                  </div>
+                )}
               </div>
             </div>
 

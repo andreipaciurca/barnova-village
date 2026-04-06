@@ -14,6 +14,8 @@ export const translations = {
       services: 'Servicii',
       tourism: 'Turism',
       contact: 'Contact',
+      bureaucracy: 'Birocrație',
+      rumors: 'Zvonuri',
     },
     hero: {
       title: 'Viitorul Comunei Bârnova',
@@ -71,6 +73,15 @@ export const translations = {
       },
     },
     sarcastic: {
+      nav: {
+        home: 'Bârlog',
+        admin: 'Marea Împărțeală',
+        services: 'Ghișeul 2',
+        tourism: 'Groapa cu Lei',
+        contact: 'Nu deranjați',
+        bureaucracy: 'Dosar cu Șină',
+        rumors: 'Radio Șanț',
+      },
       hero: {
         title: 'Viitorul Comunei (Dacă avem noroc)',
         subtitle: 'O platformă atât de modernă încât primăria încă folosește faxul. Informații oficiale, servicii care sperăm să meargă și noutăți de acum doi ani.',

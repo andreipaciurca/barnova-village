@@ -61,6 +61,8 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
     { label: t.nav.admin, href: '#admin' },
     { label: t.nav.services, href: '#services' },
     { label: t.nav.tourism, href: '#tourism' },
+    { label: t.nav.bureaucracy, href: '#digital' },
+    { label: t.nav.rumors, href: '#news' },
   ];
 
   return (
@@ -85,7 +87,7 @@ export function Navbar({ t, isSarcastic = false }: NavbarProps) {
                 Comuna Bârnova
               </span>
               <span className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase mt-1 hidden sm:block">
-                Portal Oficial
+                {isSarcastic ? 'Portal Neoficial' : 'Portal Oficial'}
               </span>
             </div>
           </div>

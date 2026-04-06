@@ -19,6 +19,8 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const service = getBrowserService()
 
+  const [post, setPost] = useState<any>(null)
+
   useEffect(() => {
     async function fetchPost() {
       try {
@@ -28,6 +30,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
           alert('Eroare: Postarea nu a fost găsită.')
           router.push('/admin/posts')
         } else {
+          setPost(data)
           setTitle(data.title || '')
           setSlug(data.slug || '')
           setContent(data.content || '')
@@ -73,17 +76,28 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
       return
     }
 
-    const { error } = await service.upsertPost({
+    // Prepare data
+    const now = new Date().toISOString()
+    const updateData: any = {
       id: params.id,
       title,
       slug,
       content,
       excerpt,
       status,
-      author_id: user.id, // Ensure author_id is preserved or set
-      updated_at: new Date().toISOString(),
-      published_at: status === 'published' ? new Date().toISOString() : null,
-    })
+      updated_at: now,
+    }
+
+    // Set published_at if moving to published and it wasn't already set
+    if (status === 'published' && !post.published_at) {
+      updateData.published_at = now
+    } else if (status === 'published' && post.published_at) {
+      updateData.published_at = post.published_at
+    } else if (status !== 'published') {
+      updateData.published_at = null
+    }
+
+    const { error } = await service.upsertPost(updateData)
 
     if (error) {
       alert('Eroare: ' + error.message)

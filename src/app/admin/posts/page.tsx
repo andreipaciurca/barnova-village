@@ -1,5 +1,8 @@
-import { getServerService } from '@/lib/supabase/services.server'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { getBrowserService } from '@/lib/supabase/services.client'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { 
@@ -10,22 +13,48 @@ import {
   Calendar,
   ChevronLeft,
   Search,
-  Filter
+  Filter,
+  Loader2
 } from 'lucide-react'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminPosts() {
-  const service = await getServerService()
-  const user = await service.getUser()
+export default function AdminPosts() {
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const router = useRouter()
+  const service = getBrowserService()
 
-  if (!user) {
-    redirect('/admin/login')
+  const handleDelete = async (id: string) => {
+    if (!confirm('Ești sigur că vrei să ștergi această postare?')) return
+
+    setIsDeleting(id)
+    try {
+      const { error } = await service.deletePost(id)
+      if (error) {
+        alert('Eroare la ștergere: ' + error.message)
+      } else {
+        router.refresh()
+      }
+    } catch (err) {
+      console.error('Delete error:', err)
+      alert('Eroare neașteptată la ștergere.')
+    } finally {
+      setIsDeleting(null)
+    }
   }
 
-  // Fetch posts from Supabase
-  const posts = await service.getAllPosts()
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadPosts() {
+      const s = await service.getAllPosts()
+      setPosts(s)
+      setLoading(false)
+    }
+    loadPosts()
+  }, [service])
 
   return (
     <div className="min-h-screen bg-muted/10 p-6 lg:p-12">
@@ -113,11 +142,19 @@ export default async function AdminPosts() {
                               <Pencil className="w-5 h-5" />
                             </Button>
                           </Link>
-                          <form action={`/admin/posts/delete/${post.id}`} method="POST" className="inline">
-                            <Button variant="outline" size="icon" className="w-12 h-12 rounded-xl border-border/50 text-destructive hover:bg-destructive/10 hover:border-destructive/20 transition-all">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="w-12 h-12 rounded-xl border-border/50 text-destructive hover:bg-destructive/10 hover:border-destructive/20 transition-all"
+                            onClick={() => handleDelete(post.id)}
+                            disabled={isDeleting === post.id}
+                          >
+                            {isDeleting === post.id ? (
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
                               <Trash2 className="w-5 h-5" />
-                            </Button>
-                          </form>
+                            )}
+                          </Button>
                         </div>
                       </td>
                     </tr>

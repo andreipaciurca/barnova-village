@@ -12,6 +12,7 @@ import * as motion from 'framer-motion/client';
 import { Navbar } from '@/components/ui/Navbar';
 import { GovernanceSection } from '@/components/ui/GovernanceSection';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   ArrowRight, 
   MapPin, 
@@ -632,7 +633,14 @@ export default async function Home() {
                 </div>
                 <div className="relative">
                   <div className="aspect-square bg-white/20 backdrop-blur-3xl rounded-[3rem] border border-white/30 flex items-center justify-center p-8 shadow-2xl overflow-hidden group-hover:scale-105 transition-transform duration-700">
-                    <div className="absolute inset-0 opacity-10 grayscale group-hover:grayscale-0 transition-all duration-700 bg-[url('https://primariabarnova.ro/wp-content/uploads/2017/05/poza_panoramica.jpg')] bg-cover bg-center" />
+                    <Image 
+                      src="https://primariabarnova.ro/wp-content/uploads/2017/05/poza_panoramica.jpg"
+                      alt="Panorama Comuna Bârnova"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      className="absolute inset-0 opacity-10 grayscale group-hover:grayscale-0 transition-all duration-700 object-cover"
+                      priority
+                    />
                     <div className="relative z-10 w-24 h-24 bg-primary rounded-3xl flex items-center justify-center text-white text-5xl font-black shadow-2xl">B</div>
                   </div>
                 </div>

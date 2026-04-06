@@ -62,41 +62,41 @@ export default async function Home() {
       <div className="liquid-bg">
         <motion.div 
           animate={{ 
-            x: [0, 150, 0],
-            y: [0, 100, 0],
-            scale: [1, 1.2, 1],
-            rotate: [0, 45, 0]
+            x: [0, 80, 0],
+            y: [0, 50, 0],
+            scale: [1, 1.1, 1],
+            rotate: [0, 15, 0]
+          }}
+          transition={{ duration: 35, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-primary/20 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
+        />
+        <motion.div 
+          animate={{ 
+            x: [0, -60, 0],
+            y: [0, 80, 0],
+            scale: [1, 1.15, 1],
+            rotate: [0, -20, 0]
+          }}
+          transition={{ duration: 40, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-20%] right-[-10%] w-[900px] h-[900px] bg-accent/20 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
+        />
+        <motion.div 
+          animate={{ 
+            x: [0, 40, 0],
+            y: [0, -60, 0],
+            scale: [1.1, 1, 1.1]
+          }}
+          transition={{ duration: 32, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-emerald-500/15 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
+        />
+        <motion.div 
+          animate={{ 
+            x: [0, -30, 0],
+            y: [0, 40, 0],
+            scale: [1, 1.05, 1]
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-primary/30 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
-        />
-        <motion.div 
-          animate={{ 
-            x: [0, -120, 0],
-            y: [0, 150, 0],
-            scale: [1, 1.3, 1],
-            rotate: [0, -60, 0]
-          }}
-          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[-20%] right-[-10%] w-[900px] h-[900px] bg-accent/30 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
-        />
-        <motion.div 
-          animate={{ 
-            x: [0, 80, 0],
-            y: [0, -150, 0],
-            scale: [1.3, 1, 1.3]
-          }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-emerald-500/20 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
-        />
-        <motion.div 
-          animate={{ 
-            x: [0, -50, 0],
-            y: [0, 80, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-blue-400/20 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
+          className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-blue-400/15 rounded-full mix-blend-soft-light dark:mix-blend-multiply" 
         />
       </div>
 
@@ -130,7 +130,7 @@ export default async function Home() {
             <motion.h1 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ delay: 0.1, duration: 0.5 }}
               className="text-6xl md:text-[9rem] font-black tracking-tight text-foreground mb-10 text-balance leading-[0.9] drop-shadow-sm grainy-text"
             >
               {t.hero.title}
@@ -139,7 +139,7 @@ export default async function Home() {
             <motion.p 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
               className="max-w-3xl mx-auto text-lg md:text-2xl leading-relaxed text-muted-foreground mb-10 text-balance font-semibold opacity-90"
             >
               {t.hero.subtitle}
@@ -148,7 +148,7 @@ export default async function Home() {
             <motion.div 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-6"
             >
               <a href="#news" className="w-full sm:w-auto">
@@ -169,12 +169,13 @@ export default async function Home() {
         <div className="fixed inset-0 -z-20 opacity-[0.03] pointer-events-none dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
 
         {/* Stats & Infographics Section */}
-        <section id="admin" className="py-16 relative overflow-hidden">
+        <section id="admin" className="py-16 relative overflow-hidden contain-layout">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-16">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-4 ring-1 ring-emerald-500/20 backdrop-blur-md"
               >
                 <Activity className="w-3 h-3" />
@@ -374,12 +375,13 @@ export default async function Home() {
         </section>
 
         {/* Features Bento Grid */}
-        <section id="services" className="py-16 bg-muted/30 relative">
+        <section id="services" className="py-16 bg-muted/30 relative contain-layout">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="text-center mb-10">
               <motion.h2 
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
                 className="text-3xl md:text-5xl font-black mb-4"
               >
                 Descoperiți Facilitățile
@@ -393,7 +395,7 @@ export default async function Home() {
                   key={feature.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, margin: "-100px" }}
                   transition={{ delay: idx * 0.1 }}
                   className={cn(
                     "bento-card group h-full flex flex-col justify-between overflow-hidden relative",
@@ -429,7 +431,7 @@ export default async function Home() {
         <GovernanceSection data={adminData} t={t.features} />
 
         {/* News & Social Section */}
-        <section id="news" className="py-16 max-w-7xl mx-auto px-6 lg:px-8">
+        <section id="news" className="py-16 max-w-7xl mx-auto px-6 lg:px-8 contain-layout">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8">
               <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 gap-6">
@@ -453,6 +455,7 @@ export default async function Home() {
                     key={news.link}
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: "-50px" }}
                     transition={{ delay: idx * 0.1 }}
                   >
                     <a href={news.link} target="_blank" rel="noopener noreferrer" className="block h-full">

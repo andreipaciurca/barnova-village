@@ -21,27 +21,57 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function fetchPost() {
-      const data = await service.getPostById(params.id)
+      try {
+        const data = await service.getPostById(params.id)
 
-      if (!data) {
-        alert('Eroare la preluarea postării')
+        if (!data) {
+          alert('Eroare: Postarea nu a fost găsită.')
+          router.push('/admin/posts')
+        } else {
+          setTitle(data.title || '')
+          setSlug(data.slug || '')
+          setContent(data.content || '')
+          setExcerpt(data.excerpt || '')
+          setStatus(data.status || 'draft')
+        }
+      } catch (err) {
+        console.error('Error fetching post:', err)
+        alert('Eroare la preluarea postării. Verifică conexiunea la baza de date.')
         router.push('/admin/posts')
-      } else {
-        setTitle(data.title)
-        setSlug(data.slug)
-        setContent(data.content)
-        setExcerpt(data.excerpt)
-        setStatus(data.status)
+      } finally {
+        setFetching(false)
       }
-      setFetching(false)
     }
 
     fetchPost()
   }, [params.id, router, service])
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setTitle(val)
+    if (!slug || slug === generateSlug(title)) {
+      setSlug(generateSlug(val))
+    }
+  }
+
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w ]+/g, '')
+      .replace(/ +/g, '-')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+
+    const user = await service.getUser()
+    if (!user) {
+      alert('Trebuie să fii autentificat pentru a salva!')
+      setLoading(false)
+      return
+    }
 
     const { error } = await service.upsertPost({
       id: params.id,
@@ -50,7 +80,9 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
       content,
       excerpt,
       status,
+      author_id: user.id, // Ensure author_id is preserved or set
       updated_at: new Date().toISOString(),
+      published_at: status === 'published' ? new Date().toISOString() : null,
     })
 
     if (error) {

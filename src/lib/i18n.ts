@@ -70,6 +70,57 @@ export const translations = {
         party: 'Partid',
       },
     },
+    sarcastic: {
+      hero: {
+        title: 'Viitorul Comunei (Dacă avem noroc)',
+        subtitle: 'O platformă atât de modernă încât primăria încă folosește faxul. Informații oficiale, servicii care sperăm să meargă și noutăți de acum doi ani.',
+      },
+      news: {
+        title: 'Zvonuri și Anunțuri',
+        subtitle: 'Ce am mai auzit prin sat sau ce ne-au obligat să postăm',
+      },
+      features: {
+        stats: {
+          title: 'Minciuni în Cifre',
+          subtitle: 'Statistici scoase din burtă sau din API-uri pe care nu le înțelegem',
+          population: 'Suflete (teoretic)',
+          budget_title: 'Unde se duc banii 2024',
+          investments: 'Borduri noi',
+          salaries: 'Neamuri și Afini',
+          others: 'Protocol și Cafele',
+        },
+        digital: {
+          title: 'Birocrație Digitală',
+          description: 'Te rugăm să descarci PDF-ul, să-l scanezi și să-l trimiți prin porumbel voiajor.',
+        },
+        tourism: {
+          title: 'Turism de Supraviețuire',
+          description: 'Vino să vezi cum se asfaltează în timp ce plouă.',
+        },
+        transparency: {
+          title: 'Transparență de Fațadă',
+          description: 'Decizii luate în spatele ușilor închise, dar postate aici pentru conformitate.',
+        },
+        administration: {
+          title: 'Ghișeul cu Pauză',
+          description: 'Suntem aici între cafeaua de dimineață și pauza de masă.',
+        },
+        governance: {
+          title: 'Vârfurile Ierarhiei',
+          subtitle: 'Cei care decid soarta bordurilor din Bârnova',
+        },
+      },
+      archive: {
+        subtitle: 'Muzeul Digital al Promisiunilor Neîndeplinite',
+        description: 'Dacă acest site nu merge, cel vechi sigur nu mergea deloc. Arhivă de documente scanate strâmb.',
+      },
+      health: {
+        title: 'Terapie Intensivă Sistem',
+        status_online: 'ÎNCĂ REZISTĂ',
+        status_offline: 'S-A TĂIAT CURENTUL',
+        uptime: 'Timp fără restart',
+      }
+    },
     archive: {
       title: 'Continuitate și Istoric',
       subtitle: 'Acces rapid către vechiul portal și arhiva de documente primariabarnova.ro',

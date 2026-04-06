@@ -70,5 +70,5 @@ execute function public.handle_updated_at();
 insert into public.site_settings (id, value)
 values 
   ('general', '{"site_name": "Bârnova Village", "site_description": "Portalul oficial al comunei Bârnova", "contact_email": "contact@primariabarnova.ro"}'::jsonb),
-  ('features', '{"show_news": true, "show_weather": false, "show_stats": true}'::jsonb)
+  ('features', '{"show_news": true, "show_weather": false, "show_stats": true, "sarcastic_mode": false}'::jsonb)
 on conflict (id) do nothing;

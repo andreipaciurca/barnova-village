@@ -48,26 +48,7 @@ export default async function Home() {
   const featureSettings = await service.getSettings('features');
   const isSarcastic = featureSettings.sarcastic_mode === true;
 
-  const sarcasticTranslations = isSarcastic ? {
-    hero: {
-      title: 'Viitorul Comunei (Dacă avem noroc)',
-      subtitle: 'O platformă atât de modernă încât primăria încă folosește faxul. Informații oficiale, servicii care sperăm să meargă și noutăți de acum doi ani.',
-    },
-    news: {
-      title: 'Zvonuri și Anunțuri',
-      subtitle: 'Ce am mai auzit prin sat sau ce ne-au obligat să postăm',
-    },
-    features: {
-      digital: {
-        title: 'Birocrație Digitală',
-        description: 'Te rugăm să descarci PDF-ul, să-l scanezi și să-l trimiți prin porumbel voiajor.',
-      },
-      transparency: {
-        title: 'Transparență de Fațadă',
-        description: 'Decizii luate în spatele ușilor închise, dar postate aici pentru conformitate.',
-      }
-    }
-  } : null;
+  const sarcasticTranslations = isSarcastic ? translations.ro.sarcastic : null;
 
   const t = sarcasticTranslations ? {
     ...translations.ro,
@@ -75,9 +56,14 @@ export default async function Home() {
     news: { ...translations.ro.news, ...sarcasticTranslations.news },
     features: { 
       ...translations.ro.features, 
+      stats: { ...translations.ro.features.stats, ...sarcasticTranslations.features.stats },
       digital: { ...translations.ro.features.digital, ...sarcasticTranslations.features.digital },
-      transparency: { ...translations.ro.features.transparency, ...sarcasticTranslations.features.transparency }
-    }
+      tourism: { ...translations.ro.features.tourism, ...sarcasticTranslations.features.tourism },
+      transparency: { ...translations.ro.features.transparency, ...sarcasticTranslations.features.transparency },
+      administration: { ...translations.ro.features.administration, ...sarcasticTranslations.features.administration },
+      governance: { ...translations.ro.features.governance, ...sarcasticTranslations.features.governance },
+    },
+    archive: { ...translations.ro.archive, ...sarcasticTranslations.archive }
   } : translations.ro;
 
   const features = [

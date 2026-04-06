@@ -70,7 +70,11 @@ export default function HealthPage() {
   const [error, setError] = useState<string | null>(null);
   const [refreshCount, setRefreshCount] = useState(0);
 
-  const t = translations.ro.health;
+  const sarcasticTranslations = data?.status === 'UP' ? translations.ro.sarcastic.health : null;
+  const t = sarcasticTranslations ? {
+    ...translations.ro.health,
+    ...sarcasticTranslations
+  } : translations.ro.health;
 
   useEffect(() => {
     async function fetchHealth() {

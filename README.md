@@ -11,8 +11,14 @@ Un portal digital modern, rapid și transparent pentru comunitatea din Bârnova.
 
 ---
 
-### ⚠️ Proiect Demo
-**Acest site este un proiect demo și nu este afiliat cu Primăria Bârnova sau Consiliul Județean Iași. Datele sunt preluate din surse publice și API-uri guvernamentale.**
+### ⚠️ Proiect Demo & Public API
+**Acest site este un proiect demonstrativ și nu este afiliat cu Primăria Bârnova sau Consiliul Județean Iași. Datele sunt preluate din surse publice și API-uri guvernamentale în scop educativ.**
+
+Inspirat de **demoanaf.ro**, punem la dispoziție următoarele endpoint-uri publice:
+- **Leadership**: `GET /api/v1/leadership` (Primar, Consiliu Local)
+- **Postări**: `GET /api/v1/posts` (Știri agregate)
+- **Statistici**: `GET /api/v1/stats` (Indicatori simpli)
+- **Sănătate**: `GET /api/health` (Monitorizare sistem)
 
 ---
 

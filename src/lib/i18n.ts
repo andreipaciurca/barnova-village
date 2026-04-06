@@ -182,6 +182,7 @@ export const translations = {
           show_news: 'Afișează Știri',
           show_stats: 'Afișează Statistici',
           show_weather: 'Afișează Vremea',
+          sarcastic_mode: 'Mod Sarcastic (Activ)',
         },
         save: 'Salvează Modificările',
         success: 'Setările au fost salvate cu succes!',

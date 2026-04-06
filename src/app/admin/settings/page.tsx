@@ -67,11 +67,13 @@ export default async function AdminSettingsPage({
     const show_news = formData.get('show_news') === 'on'
     const show_stats = formData.get('show_stats') === 'on'
     const show_weather = formData.get('show_weather') === 'on'
+    const sarcastic_mode = formData.get('sarcastic_mode') === 'on'
     
     const result = await service.updateSettings('features', {
       show_news,
       show_stats,
-      show_weather
+      show_weather,
+      sarcastic_mode
     })
 
     if (!result.error) {
@@ -252,6 +254,21 @@ export default async function AdminSettingsPage({
                     type="checkbox" 
                     defaultChecked={featureSettings.show_weather}
                     className="w-6 h-6 rounded-lg text-primary focus:ring-primary border-none bg-muted-foreground/20"
+                  />
+                </label>
+
+                <label className="flex items-center justify-between p-6 rounded-2xl bg-orange-500/5 border border-orange-500/10 hover:bg-orange-500/10 transition-all cursor-pointer group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all">
+                      <AlertCircle className="w-5 h-5" />
+                    </div>
+                    <span className="font-bold text-orange-700">{t.features.sarcastic_mode}</span>
+                  </div>
+                  <input 
+                    name="sarcastic_mode"
+                    type="checkbox" 
+                    defaultChecked={featureSettings.sarcastic_mode}
+                    className="w-6 h-6 rounded-lg text-orange-600 focus:ring-orange-500 border-none bg-orange-500/20"
                   />
                 </label>
               </div>

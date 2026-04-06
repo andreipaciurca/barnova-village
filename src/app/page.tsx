@@ -43,11 +43,42 @@ export default async function Home() {
   const rssNews = await getNewsFeed();
   const adminData = await getAdministrationData();
   
-  const t = translations.ro;
-
-  // Modificare pentru a include link-ul către Admin în footer sau altundeva dacă ești logat
   const service = await getServerService();
   const user = await service.getUser();
+  const featureSettings = await service.getSettings('features');
+  const isSarcastic = featureSettings.sarcastic_mode === true;
+
+  const sarcasticTranslations = isSarcastic ? {
+    hero: {
+      title: 'Viitorul Comunei (Dacă avem noroc)',
+      subtitle: 'O platformă atât de modernă încât primăria încă folosește faxul. Informații oficiale, servicii care sperăm să meargă și noutăți de acum doi ani.',
+    },
+    news: {
+      title: 'Zvonuri și Anunțuri',
+      subtitle: 'Ce am mai auzit prin sat sau ce ne-au obligat să postăm',
+    },
+    features: {
+      digital: {
+        title: 'Birocrație Digitală',
+        description: 'Te rugăm să descarci PDF-ul, să-l scanezi și să-l trimiți prin porumbel voiajor.',
+      },
+      transparency: {
+        title: 'Transparență de Fațadă',
+        description: 'Decizii luate în spatele ușilor închise, dar postate aici pentru conformitate.',
+      }
+    }
+  } : null;
+
+  const t = sarcasticTranslations ? {
+    ...translations.ro,
+    hero: { ...translations.ro.hero, ...sarcasticTranslations.hero },
+    news: { ...translations.ro.news, ...sarcasticTranslations.news },
+    features: { 
+      ...translations.ro.features, 
+      digital: { ...translations.ro.features.digital, ...sarcasticTranslations.features.digital },
+      transparency: { ...translations.ro.features.transparency, ...sarcasticTranslations.features.transparency }
+    }
+  } : translations.ro;
 
   const features = [
     { ...t.features.digital, icon: Zap, color: 'text-blue-500', bg: 'bg-blue-500/10' },
